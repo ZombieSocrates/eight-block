@@ -30,7 +30,7 @@ class eightBlock():
 		'''shows the current board configuration
 		'''
 		for r in range(len(self.valid_inds)):
-			print(self.board_config[3*r:3*(r+1)])
+			print(self.board_config[3*r:3*(r + 1)])
 
 	def get_row(self, board_val):
 		'''Given a value 0-8, this function will return the row where that 
@@ -46,6 +46,20 @@ class eightBlock():
 		curr_ind = self.board_config.index(board_val)
 		return curr_ind % 3
 
+	def get_misplaced_values(self):
+		'''scans self.board_config and returns a list of misplaced values
+		against the assumed goal state of [1,2,3,4,5,6,7,8,0].
+
+		By extension, this will return an empty list if the board is solved
+		'''
+		misplaced = []
+		for v in self.board_config:
+			if (v == 0) and (self.board_config.index(v) != 8):
+				misplaced.append(v)
+			elif (v != 0) and (self.board_config.index(v) != (v - 1)):
+				misplaced.append(v)
+		return misplaced
+
 
 if __name__ == "__main__":
     
@@ -58,9 +72,15 @@ if __name__ == "__main__":
 	    r = foo.get_row(v)
 	    c = foo.get_col(v)
 	    print("{} located at position ({},{})".format(v, r, c))
-    ipdb.set_trace()
 
     # Test whether the board is solved
+    wrongs = foo.get_misplaced_values()
+    if not wrongs:
+    	print("Board is solved!")
+    else:
+    	print("These are out of place: {}".format(wrongs))
+
+    ipdb.set_trace()
 
     # Try to move the empty slot one space
 
