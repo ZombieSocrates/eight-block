@@ -71,7 +71,10 @@ class eightBlock():
         curr_ind = self.board_config.index(board_val)
         return curr_ind % 3
 
-    def move_left(self):
+    def mv_left(self):
+        '''Moves the zero in the current board configuration to the left if
+        possible. Otherwise returns an empty list
+        '''
         next_board = []
         z_col = self.get_col(0)
         if (z_col - 1) in self.valid_inds:
@@ -82,7 +85,10 @@ class eightBlock():
             next_board[z_ind] = swap_v
         return next_board
 
-    def move_right(self):
+    def mv_right(self):
+        '''Moves the zero in the current board configuration to the right if
+        possible. Otherwise returns an empty list
+        '''
         next_board = []
         z_col = self.get_col(0)
         if (z_col + 1) in self.valid_inds:
@@ -93,7 +99,10 @@ class eightBlock():
             next_board[z_ind] = swap_v
         return next_board
 
-    def move_up(self):
+    def mv_up(self):
+        '''Moves the zero in the current board configuration up if possible. 
+        Otherwise returns an empty list
+        '''
         next_board = []
         z_row = self.get_row(0)
         if (z_row - 1) in self.valid_inds:
@@ -104,7 +113,10 @@ class eightBlock():
             next_board[z_ind] = swap_v
         return next_board
 
-    def move_down(self):
+    def mv_down(self):
+        '''Moves the zero in the current board configuration down if possible. 
+        Otherwise returns an empty list
+        '''
         next_board = []
         z_row = self.get_row(0)
         if (z_row + 1) in self.valid_inds:
@@ -114,6 +126,10 @@ class eightBlock():
             next_board[z_ind + 3] = 0
             next_board[z_ind] = swap_v
         return next_board
+
+    def get_next_boards(self):
+        nxts = [self.mv_left(), self.mv_right(), self.mv_up(), self.mv_down()]
+        return [x for x in nxts if x]
 
 
 
@@ -141,20 +157,25 @@ if __name__ == "__main__":
 
     # Try to move the empty slot in all possible directions
     print("Moving Left...")
-    foo.display_board(foo.move_left())
+    foo.display_board(foo.mv_left())
     print()
 
     print("Moving Right...")
-    foo.display_board(foo.move_right())
+    foo.display_board(foo.mv_right())
     print()
 
     print("Moving Up...")
-    foo.display_board(foo.move_up())
+    foo.display_board(foo.mv_up())
     print()
 
     print("Moving Down...")
-    foo.display_board(foo.move_down())
+    foo.display_board(foo.mv_down())
     print()
+
+    # print("Another way to do this ...")
+    # for q in foo.get_next_boards():
+    #     foo.display_board(q)
+    #     print()
 
     ipdb.set_trace()
 
