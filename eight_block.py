@@ -15,7 +15,7 @@ class eightBlock():
         to be explicit about it
         '''
         self.valid_vals = [i for i in range(9)]
-        self.valid_inds = [i for i in range(3)]
+        self.valid_dims = [i for i in range(3)]
         self.valid_dirs = ["left","right","up","down"]
         if positions is None:
             random.shuffle(self.valid_vals)
@@ -45,7 +45,7 @@ class eightBlock():
         else:
             if board is None:
                 board = self.board_config
-            for r in self.valid_inds:
+            for r in self.valid_dims:
                 print(board[3*r:3*(r + 1)])
 
     def get_misplaced_values(self):
@@ -90,7 +90,7 @@ class eightBlock():
         next_board = []
         dim_chk = self.get_row(0) if mv_dir in ["up","down"] else self.get_col(0)
         chk_val = -1 if mv_dir in ["left","up"] else 1
-        if (dim_chk + chk_val) in self.valid_inds:
+        if (dim_chk + chk_val) in self.valid_dims:
             next_board.extend(self.board_config)
             z_ind = next_board.index(0)
             mv_amt = 3 * chk_val if mv_dir in ["up","down"] else chk_val
@@ -114,40 +114,48 @@ class eightBlock():
 
 class depthFirstSearchSolver(eightBlock):
 
+    def __init__(self, positions = None):
+        '''Still reserving the option to define a starting position. Only 
+        adding an array that keeps track of the moves_made function
+        '''
+        self.moves_made = []
+        super().__init__(positions)
+
     def solve(self):
-        if self.get_misplaced_values:
-            print("board is not solved")
-            print("shit")
+        if self.get_misplaced_values():
+            print("board is not solved...shit")
+        else:
+            print("MY WORK HERE IS DONE")
 
 
 
 if __name__ == "__main__":
     
-    # foo = eightBlock()
-    # # Display the board properly
-    # foo.display_board()
+    foo = depthFirstSearchSolver()
+    # Display the board properly
+    foo.display_board()
 
-    # # Index into things properly
-    # for v in range(len(foo.valid_vals)):
-    #     r = foo.get_row(v)
-    #     c = foo.get_col(v)
-    #     print("{} located at position ({},{})".format(v, r, c))
+    # Index into things properly
+    for v in range(len(foo.valid_vals)):
+        r = foo.get_row(v)
+        c = foo.get_col(v)
+        print("{} located at position ({},{})".format(v, r, c))
 
-    # # Test whether the board is solved
-    # wrongs = foo.get_misplaced_values()
-    # if not wrongs:
-    #     print("Board is solved!")
-    # else:
-    #     print("These are out of place: {}".format(wrongs))
+    # Test whether the board is solved
+    wrongs = foo.get_misplaced_values()
+    if not wrongs:
+        print("Board is solved!")
+    else:
+        print("These are out of place: {}".format(wrongs))
 
-    # print("Moving zero {}".format(", ".join(foo.valid_dirs)))
-    # for q in foo.get_next_boards():
-    #     foo.display_board(q)
-    #     print()
+    print("Moving zero {}".format(", ".join(foo.valid_dirs)))
+    for q in foo.get_next_boards():
+        foo.display_board(q)
+        print()
 
     # ipdb.set_trace()
 
-    foo = depthFirstSearchSolver()
+    bar = depthFirstSearchSolver([1,2,3,4,5,6,7,8,0])
     ipdb.set_trace()
 
 
