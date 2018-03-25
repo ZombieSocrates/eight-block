@@ -103,13 +103,17 @@ class eightBlock():
         '''Will attempt to move the zero of the current board configuration in 
         all possible directions: left, right, up, and down.
 
-        Returns a list of those next configurations that are valid (i.e., the
-        ones that aren't empty lists)
+        Returns a dictionary representing the possible next states, where the
+        key is the direction and the value is the child board. We automatically
+        exclude invalid board states.
 
         TKTK: Option to exclude direction made in prior call?
         '''
-        nxts = [self.make_move(mv_dir) for mv_dir in self.valid_dirs]
-        return [x for x in nxts if x]
+        next_boards_dict = {}
+        for mv_dir in self.valid_dirs:
+            if self.make_move(mv_dir):
+                next_boards_dict[mv_dir] = self.make_move(mv_dir)
+        return next_boards_dict
 
 
 class depthFirstSearchSolver(eightBlock):
@@ -148,15 +152,16 @@ if __name__ == "__main__":
     else:
         print("These are out of place: {}".format(wrongs))
 
-    print("Moving zero {}".format(", ".join(foo.valid_dirs)))
-    for q in foo.get_next_boards():
-        foo.display_board(q)
+    print("Making possible moves")
+    for mv_dir, new_brd in foo.get_next_boards().items():
+        print(mv_dir)
+        foo.display_board(new_brd)
         print()
 
-    # ipdb.set_trace()
-
-    bar = depthFirstSearchSolver([1,2,3,4,5,6,7,8,0])
     ipdb.set_trace()
+
+    # bar = depthFirstSearchSolver([1,2,3,4,5,6,7,8,0])
+    # ipdb.set_trace()
 
 
 
