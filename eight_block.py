@@ -132,9 +132,22 @@ class depthFirstSearchSolver(eightBlock):
         '''Still reserving the option to define a starting position. Only 
         adding an array that keeps track of the moves_made function
         '''
-        self.moves_made = []
         self.boards_seen = set()
         super().__init__(positions)
+
+    def get_next_boards(self):
+        ''' Idea for how this might work in the case of DFS.
+
+        Build out an array of possible states, where each state object looks like this
+        
+        {"board":,
+         "direction":,
+         "parent":,
+         "depth":}
+
+         Uncertain whether it's worth refactoring this in the parent class
+        '''
+
 
     def solve(self):
         '''DON'T DO THIS!!! JUST DELETE STUFF
