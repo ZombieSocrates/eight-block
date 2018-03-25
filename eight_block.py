@@ -112,34 +112,42 @@ class eightBlock():
         return [x for x in nxts if x]
 
 
+class depthFirstSearchSolver(eightBlock):
 
+    def solve(self):
+        if self.get_misplaced_values:
+            print("board is not solved")
+            print("shit")
 
 
 
 if __name__ == "__main__":
     
-    foo = eightBlock()
-    # Display the board properly
-    foo.display_board()
+    # foo = eightBlock()
+    # # Display the board properly
+    # foo.display_board()
 
-    # Index into things properly
-    for v in range(len(foo.valid_vals)):
-        r = foo.get_row(v)
-        c = foo.get_col(v)
-        print("{} located at position ({},{})".format(v, r, c))
+    # # Index into things properly
+    # for v in range(len(foo.valid_vals)):
+    #     r = foo.get_row(v)
+    #     c = foo.get_col(v)
+    #     print("{} located at position ({},{})".format(v, r, c))
 
-    # Test whether the board is solved
-    wrongs = foo.get_misplaced_values()
-    if not wrongs:
-        print("Board is solved!")
-    else:
-        print("These are out of place: {}".format(wrongs))
+    # # Test whether the board is solved
+    # wrongs = foo.get_misplaced_values()
+    # if not wrongs:
+    #     print("Board is solved!")
+    # else:
+    #     print("These are out of place: {}".format(wrongs))
 
-    print("Moving zero {}".format(", ".join(foo.valid_dirs)))
-    for q in foo.get_next_boards():
-        foo.display_board(q)
-        print()
+    # print("Moving zero {}".format(", ".join(foo.valid_dirs)))
+    # for q in foo.get_next_boards():
+    #     foo.display_board(q)
+    #     print()
 
+    # ipdb.set_trace()
+
+    foo = depthFirstSearchSolver()
     ipdb.set_trace()
 
 
