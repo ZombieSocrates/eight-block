@@ -16,7 +16,7 @@ class eightBlock():
         '''
         self.valid_vals = [i for i in range(9)]
         self.valid_dims = [i for i in range(3)]
-        self.valid_dirs = ["right","left","up","down"]
+        self.valid_dirs = ["left","right","up","down"]
         if positions is None:
             random.shuffle(self.valid_vals)
             self.board_config = self.valid_vals
@@ -137,23 +137,46 @@ class depthFirstSearchSolver(eightBlock):
         super().__init__(positions)
 
     def solve(self):
+        '''DON'T DO THIS!!! JUST DELETE STUFF
+        '''
+
         while self.get_misplaced_values():
             self.boards_seen.add(self.board_to_state(self.board_config))
+            next_move = None
             next_boards = self.get_next_boards()
-            if not self.moves_made:
-                next_move = list(next_boards.keys())[0]
-            else:
-                for poss_move in next_boards.keys():
-                    if self.opposites[poss_move] == self.moves_made[-1]:
-                        continue
-                    else:
-                        next_move = poss_move
-                        break
+            for poss_move in next_boards.keys():
+                poss_state = self.board_to_state(next_boards[poss_move])
+                if poss_state in self.boards_seen:
+                    continue
+                else:
+                    next_move = poss_move
+                    break
+            if not next_boards.get(next_move,""):
+                # Rewind up the tree until you generate an unseen move...
+                # Probably a candidate for a separate function
+                curr_len = len(self.moves_made)
+                back_moves = []
+                while next_move is None:
+                    for mv_dir in self.moves_made[::-1]:
+                        opp = self.opposites[mv_dir]
+                        self.board_config = self.make_move(opp)
+                        back_moves.append(opp)
+                        next_boards = self.get_next_boards()
+                        for poss_move in next_boards.keys():
+                            poss_state = self.board_to_state(next_boards[poss_move])
+                            if poss_state in self.boards_seen:
+                                continue
+                            else:
+                                next_move = poss_move
+                                print("Had to rewind {} times".format(len(back_moves)))
+                                self.moves_made.extend(back_moves)
+                                break
+                        ipdb.set_trace()
             print("Moved {}".format(next_move))
             self.moves_made.append(next_move)
             self.board_config = next_boards[next_move]
             self.display_board()
-            # ipdb.set_trace()
+            print(len(self.moves_made))
         print("Board solved after {} moves".format(len(self.moves_made)))
         print("Path: {}".format(", ".join(self.moves_made)))
 
