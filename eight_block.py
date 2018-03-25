@@ -17,6 +17,9 @@ class eightBlock():
         self.valid_vals = [i for i in range(9)]
         self.valid_dims = [i for i in range(3)]
         self.valid_dirs = ["left","right","up","down"]
+        # UNCERTAIN IF THIS IS ACTUALLY NECESSARY
+        self.opposites = {"left":"right","right":"left","down":"up","up":"down"}
+        # DELETE IF NEVER USED
         if positions is None:
             random.shuffle(self.valid_vals)
             self.board_config = self.valid_vals
@@ -131,10 +134,6 @@ class depthFirstSearchSolver(eightBlock):
         '''
         self.moves_made = []
         self.boards_seen = set()
-        self.opposites = {"left":"right",
-                          "right":"left",
-                          "down":"up",
-                          "up":"down"}
         super().__init__(positions)
 
     def solve(self):
