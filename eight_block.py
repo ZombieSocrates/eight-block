@@ -9,9 +9,14 @@ class eightBlock():
         board configuration. Calling init with no positions will just randomly 
         shuffle valid_vals. Otherwise, we'll start with the positions given, 
         assuming it is a list containing only integers 0 through 8
+
+
+        TKTK Might want to initialize each of these with a goal state, too. Just
+        to be explicit about it
         '''
         self.valid_vals = [i for i in range(9)]
         self.valid_inds = [i for i in range(3)]
+        self.valid_dirs = ["left","right","up","down"]
         if positions is None:
             random.shuffle(self.valid_vals)
             self.board_config = self.valid_vals
@@ -48,6 +53,9 @@ class eightBlock():
         against the assumed goal state of [1,2,3,4,5,6,7,8,0].
 
         By extension, this will return an empty list if the board is solved
+
+        TKTK: RIGHT NOW THIS ASSUMES A GOAL STATE. This would need to change
+        if goal_state was ever defined as a part of the class itself
         '''
         misplaced = []
         for v in self.board_config:
@@ -71,64 +79,36 @@ class eightBlock():
         curr_ind = self.board_config.index(board_val)
         return curr_ind % 3
 
-    def mv_left(self):
-        '''Moves the zero in the current board configuration to the left if
-        possible. Otherwise returns an empty list
+    def make_move(self, mv_dir):
+        '''Moves the zero in the current board configuration in the direction 
+        specified by mv_dir. Will return the updated configuration if that 
+        direction is valid. Returns an empty list otherwise
         '''
+        if mv_dir not in self.valid_dirs:
+            d_msg = "direction must be {}".format(", ".join(self.valid_dirs))
+            raise ValueError(d_msg)
         next_board = []
-        z_col = self.get_col(0)
-        if (z_col - 1) in self.valid_inds:
+        dim_chk = self.get_row(0) if mv_dir in ["up","down"] else self.get_col(0)
+        chk_val = -1 if mv_dir in ["left","up"] else 1
+        if (dim_chk + chk_val) in self.valid_inds:
             next_board.extend(self.board_config)
             z_ind = next_board.index(0)
-            swap_v = next_board[z_ind - 1]
-            next_board[z_ind - 1] = 0
-            next_board[z_ind] = swap_v
-        return next_board
-
-    def mv_right(self):
-        '''Moves the zero in the current board configuration to the right if
-        possible. Otherwise returns an empty list
-        '''
-        next_board = []
-        z_col = self.get_col(0)
-        if (z_col + 1) in self.valid_inds:
-            next_board.extend(self.board_config)
-            z_ind = next_board.index(0)
-            swap_v = next_board[z_ind + 1]
-            next_board[z_ind + 1] = 0
-            next_board[z_ind] = swap_v
-        return next_board
-
-    def mv_up(self):
-        '''Moves the zero in the current board configuration up if possible. 
-        Otherwise returns an empty list
-        '''
-        next_board = []
-        z_row = self.get_row(0)
-        if (z_row - 1) in self.valid_inds:
-            next_board.extend(self.board_config)
-            z_ind = next_board.index(0)
-            swap_v = next_board[z_ind - 3]
-            next_board[z_ind - 3] = 0
-            next_board[z_ind] = swap_v
-        return next_board
-
-    def mv_down(self):
-        '''Moves the zero in the current board configuration down if possible. 
-        Otherwise returns an empty list
-        '''
-        next_board = []
-        z_row = self.get_row(0)
-        if (z_row + 1) in self.valid_inds:
-            next_board.extend(self.board_config)
-            z_ind = next_board.index(0)
-            swap_v = next_board[z_ind + 3]
-            next_board[z_ind + 3] = 0
+            mv_amt = 3 * chk_val if mv_dir in ["up","down"] else chk_val
+            swap_v = next_board[z_ind + mv_amt]
+            next_board[z_ind + mv_amt] = 0
             next_board[z_ind] = swap_v
         return next_board
 
     def get_next_boards(self):
-        nxts = [self.mv_left(), self.mv_right(), self.mv_up(), self.mv_down()]
+        '''Will attempt to move the zero of the current board configuration in 
+        all possible directions: left, right, up, and down.
+
+        Returns a list of those next configurations that are valid (i.e., the
+        ones that aren't empty lists)
+
+        TKTK: Option to exclude direction made in prior call?
+        '''
+        nxts = [self.make_move(mv_dir) for mv_dir in self.valid_dirs]
         return [x for x in nxts if x]
 
 
@@ -155,27 +135,10 @@ if __name__ == "__main__":
     else:
         print("These are out of place: {}".format(wrongs))
 
-    # Try to move the empty slot in all possible directions
-    print("Moving Left...")
-    foo.display_board(foo.mv_left())
-    print()
-
-    print("Moving Right...")
-    foo.display_board(foo.mv_right())
-    print()
-
-    print("Moving Up...")
-    foo.display_board(foo.mv_up())
-    print()
-
-    print("Moving Down...")
-    foo.display_board(foo.mv_down())
-    print()
-
-    # print("Another way to do this ...")
-    # for q in foo.get_next_boards():
-    #     foo.display_board(q)
-    #     print()
+    print("Moving zero {}".format(", ".join(foo.valid_dirs)))
+    for q in foo.get_next_boards():
+        foo.display_board(q)
+        print()
 
     ipdb.set_trace()
 
