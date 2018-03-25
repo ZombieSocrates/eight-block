@@ -115,6 +115,13 @@ class eightBlock():
                 next_boards_dict[mv_dir] = self.make_move(mv_dir)
         return next_boards_dict
 
+    def board_to_state(self, board):
+        '''The list form of a board configuration will be helpful for making
+        moves and calculating distances. In terms of repeated state checking, 
+        I'm converting everything to strings
+        '''
+        return ''.join([str(v) for v in board])
+
 class depthFirstSearchSolver(eightBlock):
 
     def __init__(self, positions = None):
@@ -122,6 +129,7 @@ class depthFirstSearchSolver(eightBlock):
         adding an array that keeps track of the moves_made function
         '''
         self.moves_made = []
+        self.boards_seen = set()
         self.opposites = {"left":"right",
                           "right":"left",
                           "down":"up",
@@ -130,6 +138,7 @@ class depthFirstSearchSolver(eightBlock):
 
     def solve(self):
         while self.get_misplaced_values():
+            self.boards_seen.add(self.board_to_state(self.board_config))
             next_boards = self.get_next_boards()
             if not self.moves_made:
                 next_move = list(next_boards.keys())[0]
