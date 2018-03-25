@@ -16,7 +16,7 @@ class eightBlock():
         '''
         self.valid_vals = [i for i in range(9)]
         self.valid_dims = [i for i in range(3)]
-        self.valid_dirs = ["left","right","up","down"]
+        self.valid_dirs = ["right","left","up","down"]
         if positions is None:
             random.shuffle(self.valid_vals)
             self.board_config = self.valid_vals
@@ -115,7 +115,6 @@ class eightBlock():
                 next_boards_dict[mv_dir] = self.make_move(mv_dir)
         return next_boards_dict
 
-
 class depthFirstSearchSolver(eightBlock):
 
     def __init__(self, positions = None):
@@ -123,19 +122,37 @@ class depthFirstSearchSolver(eightBlock):
         adding an array that keeps track of the moves_made function
         '''
         self.moves_made = []
+        self.opposites = {"left":"right",
+                          "right":"left",
+                          "down":"up",
+                          "up":"down"}
         super().__init__(positions)
 
     def solve(self):
-        if self.get_misplaced_values():
-            print("board is not solved...shit")
-        else:
-            print("MY WORK HERE IS DONE")
+        while self.get_misplaced_values():
+            next_boards = self.get_next_boards()
+            if not self.moves_made:
+                next_move = list(next_boards.keys())[0]
+            else:
+                for poss_move in next_boards.keys():
+                    if self.opposites[poss_move] == self.moves_made[-1]:
+                        continue
+                    else:
+                        next_move = poss_move
+                        break
+            print("Moved {}".format(next_move))
+            self.moves_made.append(next_move)
+            self.board_config = next_boards[next_move]
+            self.display_board()
+            # ipdb.set_trace()
+        print("Board solved after {} moves".format(len(self.moves_made)))
+        print("Path: {}".format(", ".join(self.moves_made)))
 
 
 
 if __name__ == "__main__":
     
-    foo = depthFirstSearchSolver()
+    foo = depthFirstSearchSolver([1,2,3,4,5,6,7,0,8])
     # Display the board properly
     foo.display_board()
 
@@ -152,16 +169,14 @@ if __name__ == "__main__":
     else:
         print("These are out of place: {}".format(wrongs))
 
-    print("Making possible moves")
-    for mv_dir, new_brd in foo.get_next_boards().items():
-        print(mv_dir)
-        foo.display_board(new_brd)
-        print()
-
+    # print("Making possible moves")
+    # for mv_dir, new_brd in foo.get_next_boards().items():
+    #     print(mv_dir)
+    #     foo.display_board(new_brd)
+    #     print()
     ipdb.set_trace()
 
-    # bar = depthFirstSearchSolver([1,2,3,4,5,6,7,8,0])
-    # ipdb.set_trace()
+    foo.solve()
 
 
 
