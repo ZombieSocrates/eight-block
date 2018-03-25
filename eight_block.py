@@ -123,7 +123,8 @@ class eightBlock():
         return ''.join([str(v) for v in board])
 
 class depthFirstSearchSolver(eightBlock):
-
+    '''Notes from Tori. Use a stack. Last In, First Out
+    '''
     def __init__(self, positions = None):
         '''Still reserving the option to define a starting position. Only 
         adding an array that keeps track of the moves_made function
@@ -179,6 +180,11 @@ class depthFirstSearchSolver(eightBlock):
             print(len(self.moves_made))
         print("Board solved after {} moves".format(len(self.moves_made)))
         print("Path: {}".format(", ".join(self.moves_made)))
+
+class breadthFirstSearch(eightBlock):
+    '''Notes from tori: use a queue. First in, first out
+    '''
+    pass
 
 
 
