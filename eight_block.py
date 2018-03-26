@@ -110,7 +110,7 @@ class eightBlock():
         key is the direction and the value is the child board. We automatically
         exclude invalid board states.
 
-        TKTK: Option to exclude direction made in prior call?
+        TKTK: To be absolutely sure about order, I could use an OrderedDict...
         '''
         next_boards_dict = {}
         for mv_dir in self.valid_dirs:
@@ -132,66 +132,67 @@ class depthFirstSearchSolver(eightBlock):
         '''Still reserving the option to define a starting position. Only 
         adding an array that keeps track of the moves_made function
         '''
-        self.boards_seen = set()
+        # self.boards_seen = set()
         super().__init__(positions)
 
-    def get_next_boards(self):
-        ''' Idea for how this might work in the case of DFS.
-
-        Build out an array of possible states, where each state object looks like this
-        
-        {"board":,
-         "direction":,
-         "parent":,
-         "depth":}
-
-         Uncertain whether it's worth refactoring this in the parent class
-        '''
-
-
     def solve(self):
-        '''DON'T DO THIS!!! JUST DELETE STUFF
+        '''Docstring in with code for now...
         '''
+        # Initialize a path map that will allow you to wind your way back
+        # to a solution. Anything keyed to this will be in the form
+        # of parent:(child, mv_dir)
+
+        # TKTK: define this in the init?
+        path_map = {}
+
+        # Create the first dictionary in your stack of boards
+        # Each of these dictionaries has the current board_config,
+        # its parent, the direction from that parent to the current config
+        # and the cost accrued to get there 
+        board_stack = [{"child":self.board_config, 
+                        "parent":None,
+                        "mv_dir":None,
+                        "path_cost":0}]
 
         while self.get_misplaced_values():
-            self.boards_seen.add(self.board_to_state(self.board_config))
-            next_move = None
+            # Fun Fact: For non-solveable boards, you can exhaust the
+            # board stack...
+            board = board_stack[0]
+            self.board_config = board["child"]
+            curr_state = self.board_to_state(self.board_config)
+            path_map[curr_state] = (board["parent"], board["mv_dir"])
+            if not self.get_misplaced_values():
+                print("WE SOLVED IT!!!")
+                break
+            board_stack.pop(0)
             next_boards = self.get_next_boards()
+            # Generate a list of new dictionaries to go on the stack,
+            # so long as they are unseen states
+            to_stack = []
             for poss_move in next_boards.keys():
-                poss_state = self.board_to_state(next_boards[poss_move])
-                if poss_state in self.boards_seen:
+                if self.board_to_state(next_boards[poss_move]) in path_map.keys():
                     continue
-                else:
-                    next_move = poss_move
-                    break
-            if not next_boards.get(next_move,""):
-                # Rewind up the tree until you generate an unseen move...
-                # Probably a candidate for a separate function
-                curr_len = len(self.moves_made)
-                back_moves = []
-                while next_move is None:
-                    for mv_dir in self.moves_made[::-1]:
-                        opp = self.opposites[mv_dir]
-                        self.board_config = self.make_move(opp)
-                        back_moves.append(opp)
-                        next_boards = self.get_next_boards()
-                        for poss_move in next_boards.keys():
-                            poss_state = self.board_to_state(next_boards[poss_move])
-                            if poss_state in self.boards_seen:
-                                continue
-                            else:
-                                next_move = poss_move
-                                print("Had to rewind {} times".format(len(back_moves)))
-                                self.moves_made.extend(back_moves)
-                                break
-                        ipdb.set_trace()
-            print("Moved {}".format(next_move))
-            self.moves_made.append(next_move)
-            self.board_config = next_boards[next_move]
-            self.display_board()
-            print(len(self.moves_made))
-        print("Board solved after {} moves".format(len(self.moves_made)))
-        print("Path: {}".format(", ".join(self.moves_made)))
+                stack_dict = {"child":next_boards[poss_move],
+                              "parent":curr_state,
+                              "mv_dir":poss_move,
+                              "path_cost":board["path_cost"] + 1}
+                to_stack.append(stack_dict)
+            # Now, append the items in to_stack to board_stack in
+            # reverse, so that we're always moving in the same direction
+            # first, if possible
+            for stack_dict in to_stack[::-1]:
+                board_stack.insert(0,stack_dict)
+            print(len(path_map)) 
+
+        # Still need to think about what the proper way to return something is...
+        # Unwinding the path dictionary is basically getting values and using those
+        # as keys until you hit the key that gives you a value None
+
+        # This should return a list that is equivalent to board["path_cost"]
+        # For the test case [1,2,3,4,5,6,7,0,8], that should be 433
+
+        ipdb.set_trace()
+
 
 class breadthFirstSearch(eightBlock):
     '''Notes from tori: use a queue. First in, first out
@@ -224,8 +225,6 @@ if __name__ == "__main__":
     #     print(mv_dir)
     #     foo.display_board(new_brd)
     #     print()
-    ipdb.set_trace()
-
     foo.solve()
 
 
