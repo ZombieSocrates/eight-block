@@ -164,10 +164,27 @@ class depthFirstSearchSolver(eightBlock):
 
     def update_path_map(self, current_board):
         '''Once we have a board from the top of the stack, we need to update 
-        the path_map, which keeps track of visited states and allows us to
-        return a solution when the goal state is found
+        the path_map, which keeps track of visited states and all of the 
+        parent-to-child relationships between those states. After setting 
+        self.board_config as the `child` attribute of current_board, we then 
+        use current_board to make this update.
+
+        The path_map dictionary being updated has strings representing every 
+        child state visited in the solution so far as keys. The values are 
+        tuples in the form of (parent state, direction). Thus we can say: 
+        "to get to [child_state], I moved [direction] from [parent_state]"
+
+        The only exception to this dictionary structure is that the initial 
+        state key will have a value of None, since it has no parent.
         '''
-        pass
+        self.board_config = current_board["child"]
+        current_state = self.board_to_state(self.board_config)
+        parent_state = current_board["parent"]
+        if parent_state is None:
+            self.path_map[current_state] = None
+        else:
+            parent_to_child_dir = current_board["mv_dir"]
+            self.path_map[current_state] = (parent_state, parent_to_child_dir)
 
     def solve(self):
         '''Docstring in with code for now...
@@ -181,9 +198,7 @@ class depthFirstSearchSolver(eightBlock):
             curr_board = self.check_top_of_stack()
             if curr_board is None:
                 return curr_board
-            self.board_config = curr_board["child"]
-            curr_state = self.board_to_state(self.board_config)
-            self.path_map[curr_state] = (curr_board["parent"], curr_board["mv_dir"]) if curr_board["parent"] else None
+            self.update_path_map(curr_board)
             if not self.get_misplaced_values():
                 print("WE SOLVED IT!!!")
                 break
@@ -196,7 +211,7 @@ class depthFirstSearchSolver(eightBlock):
                 if self.board_to_state(next_boards[poss_move]) in self.path_map.keys():
                     continue
                 stack_dict = {"child":next_boards[poss_move],
-                              "parent":curr_state,
+                              "parent":self.board_to_state(self.board_config),
                               "mv_dir":poss_move,
                               "path_cost":curr_board["path_cost"] + 1}
                 to_stack.append(stack_dict)
@@ -255,7 +270,8 @@ if __name__ == "__main__":
     #     print(mv_dir)
     #     foo.display_board(new_brd)
     #     print()
-    foo.solve()
+    merp = foo.solve()
+    
     ipdb.set_trace()
 
 
