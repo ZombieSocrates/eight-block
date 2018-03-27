@@ -129,48 +129,50 @@ class depthFirstSearchSolver(eightBlock):
     '''Notes from Tori. Use a stack. Last In, First Out
     '''
     def __init__(self, positions = None):
-        '''Still reserving the option to define a starting position. Only 
-        adding an array that keeps track of the moves_made function
+        '''Calls the initialization function of eightBlock (with option to 
+        specify initial board configuration) and then defines two additional
+        class level attributes
+
+            * path_map (dict): a dictionary that keeps track of child:parent 
+            relationships visited by the solve() method. Initializes as
+            empty
+            * board_stack (list): the data structure used to implement
+            depth-first search. The first thing on the stack is a dictionary 
+            representation of the initial board configuration, along with
+            a marker indicating we're at depth 0 in the search tree
         '''
-        # self.boards_seen = set()
         super().__init__(positions)
+        self.path_map = {}
+        self.board_stack = [{"child":self.board_config, 
+                             "parent":None,
+                             "path_cost":0}]
+
 
     def solve(self):
         '''Docstring in with code for now...
         '''
-        # Initialize a path map that will allow you to wind your way back
-        # to a solution. Anything keyed to this will be in the form
-        # of parent:(child, mv_dir)
 
-        # TKTK: define this in the init?
-        path_map = {}
-
-        # Create the first dictionary in your stack of boards
+        # Create the first dictionary in your stack of boards (MOVE TO INIT)
         # Each of these dictionaries has the current board_config,
         # its parent, the direction from that parent to the current config
         # and the cost accrued to get there 
-        board_stack = [{"child":self.board_config, 
-                        "parent":None,
-                        "mv_dir":None,
-                        "path_cost":0}]
-
         while self.get_misplaced_values():
             # Fun Fact: For non-solveable boards, you can exhaust the
             # board stack...
-            board = board_stack[0]
+            board = self.board_stack[0]
             self.board_config = board["child"]
             curr_state = self.board_to_state(self.board_config)
-            path_map[curr_state] = (board["parent"], board["mv_dir"]) if board["parent"] else None
+            self.path_map[curr_state] = (board["parent"], board["mv_dir"]) if board["parent"] else None
             if not self.get_misplaced_values():
                 print("WE SOLVED IT!!!")
                 break
-            board_stack.pop(0)
+            self.board_stack.pop(0)
             next_boards = self.get_next_boards()
             # Generate a list of new dictionaries to go on the stack,
             # so long as they are unseen states
             to_stack = []
             for poss_move in next_boards.keys():
-                if self.board_to_state(next_boards[poss_move]) in path_map.keys():
+                if self.board_to_state(next_boards[poss_move]) in self.path_map.keys():
                     continue
                 stack_dict = {"child":next_boards[poss_move],
                               "parent":curr_state,
@@ -181,8 +183,8 @@ class depthFirstSearchSolver(eightBlock):
             # reverse, so that we're always moving in the same direction
             # first, if possible
             for stack_dict in to_stack[::-1]:
-                board_stack.insert(0,stack_dict)
-            print(len(path_map)) 
+                self.board_stack.insert(0,stack_dict)
+            print(len(self.path_map)) 
 
         # Still need to think about what the proper way to return something is...
         # Unwinding the path dictionary is basically getting values and using those
@@ -193,10 +195,10 @@ class depthFirstSearchSolver(eightBlock):
 
         # MAKE ME A FUNCTION
         solution_path = []
-        path_key = curr_state
-        while path_map.get(path_key,""):
-            solution_path.insert(0,path_map[path_key])
-            path_key = path_map[path_key][0]
+        path_key = self.board_to_state(self.board_config)
+        while self.path_map.get(path_key,""):
+            solution_path.insert(0,self.path_map[path_key])
+            path_key = self.path_map[path_key][0]
 
         ipdb.set_trace()
 
