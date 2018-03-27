@@ -158,8 +158,16 @@ class depthFirstSearchSolver(eightBlock):
         try:
             top_board = self.board_stack[0]
         except IndexError:
+            print("Initial board configuration not solveable")
             top_board = None
         return top_board
+
+    def update_path_map(self, current_board):
+        '''Once we have a board from the top of the stack, we need to update 
+        the path_map, which keeps track of visited states and allows us to
+        return a solution when the goal state is found
+        '''
+        pass
 
     def solve(self):
         '''Docstring in with code for now...
@@ -171,6 +179,8 @@ class depthFirstSearchSolver(eightBlock):
         # and the cost accrued to get there 
         while self.get_misplaced_values():
             curr_board = self.check_top_of_stack()
+            if curr_board is None:
+                return curr_board
             self.board_config = curr_board["child"]
             curr_state = self.board_to_state(self.board_config)
             self.path_map[curr_state] = (curr_board["parent"], curr_board["mv_dir"]) if curr_board["parent"] else None
