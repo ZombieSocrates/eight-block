@@ -160,7 +160,7 @@ class depthFirstSearchSolver(eightBlock):
             board = board_stack[0]
             self.board_config = board["child"]
             curr_state = self.board_to_state(self.board_config)
-            path_map[curr_state] = (board["parent"], board["mv_dir"])
+            path_map[curr_state] = (board["parent"], board["mv_dir"]) if board["parent"] else None
             if not self.get_misplaced_values():
                 print("WE SOLVED IT!!!")
                 break
@@ -190,6 +190,13 @@ class depthFirstSearchSolver(eightBlock):
 
         # This should return a list that is equivalent to board["path_cost"]
         # For the test case [1,2,3,4,5,6,7,0,8], that should be 433
+
+        # MAKE ME A FUNCTION
+        solution_path = []
+        path_key = curr_state
+        while path_map.get(path_key,""):
+            solution_path.insert(0,path_map[path_key])
+            path_key = path_map[path_key][0]
 
         ipdb.set_trace()
 
