@@ -17,9 +17,7 @@ class eightBlock():
         self.valid_vals = [i for i in range(9)]
         self.valid_dims = [i for i in range(3)]
         self.valid_dirs = ["left","right","up","down"]
-        # UNCERTAIN IF THIS IS ACTUALLY NECESSARY
-        self.opposites = {"left":"right","right":"left","down":"up","up":"down"}
-        # DELETE IF NEVER USED
+        # CONVERT THIS TO SOMETHING THAT VALIDATES POSITIONS AND GOAL STATE
         if positions is None:
             random.shuffle(self.valid_vals)
             self.board_config = self.valid_vals
