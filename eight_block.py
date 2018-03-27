@@ -186,22 +186,41 @@ class depthFirstSearchSolver(eightBlock):
             parent_to_child_dir = current_board["mv_dir"]
             self.path_map[current_state] = (parent_state, parent_to_child_dir)
 
+    def retrieve_solution_path(self):
+        '''Once we are at the solution state, we use that final state as
+        a key in the path_map dictionary to look up the parent state and the
+        direction between them. We keep doing this until we get all the
+        way back to the starting point of the search.
+
+        Returns a list of (parent_state, direction) tuples from path_map that 
+        spell out the solution found. The length of this solution_path is the 
+        number of levels deep in the tree we had to go to find this solution
+        '''
+        solution_path = []
+        child_key = self.board_to_state(self.board_config)
+        while self.path_map.get(child_key,""):
+            solution_path.insert(0, self.path_map[child_key])
+            child_key = self.path_map[child_key][0]
+        return solution_path
+
+    def display_solution_path(self, solution_path):
+        '''Simply iterates over the tuples and prints out the solution 
+        instructions line by line in the format "From [state], move [direction"
+        '''
+        for i, tup in enumerate(solution_path):
+            print("{}. From {}, move {}".format(i + 1, tup[0], tup[1]))
+
     def solve(self):
         '''Docstring in with code for now...
         '''
-
-        # Create the first dictionary in your stack of boards (MOVE TO INIT)
-        # Each of these dictionaries has the current board_config,
-        # its parent, the direction from that parent to the current config
-        # and the cost accrued to get there 
         while self.get_misplaced_values():
             curr_board = self.check_top_of_stack()
             if curr_board is None:
                 return curr_board
             self.update_path_map(curr_board)
             if not self.get_misplaced_values():
-                print("WE SOLVED IT!!!")
-                break
+                print("Solution found!")
+                return self.retrieve_solution_path()
             self.board_stack.pop(0)
             next_boards = self.get_next_boards()
             # Generate a list of new dictionaries to go on the stack,
@@ -221,22 +240,6 @@ class depthFirstSearchSolver(eightBlock):
             for stack_dict in to_stack[::-1]:
                 self.board_stack.insert(0,stack_dict)
             print(len(self.path_map)) 
-
-        # Still need to think about what the proper way to return something is...
-        # Unwinding the path dictionary is basically getting values and using those
-        # as keys until you hit the key that gives you a value None
-
-        # This should return a list that is equivalent to board["path_cost"]
-        # For the test case [1,2,3,4,5,6,7,0,8], that should be 433
-
-        # MAKE ME A FUNCTION
-        solution_path = []
-        path_key = self.board_to_state(self.board_config)
-        while self.path_map.get(path_key,""):
-            solution_path.insert(0,self.path_map[path_key])
-            path_key = self.path_map[path_key][0]
-
-        return solution_path
 
 
 class breadthFirstSearch(eightBlock):
@@ -271,7 +274,7 @@ if __name__ == "__main__":
     #     foo.display_board(new_brd)
     #     print()
     merp = foo.solve()
-    
+    print("Cost of solution found: {}".format(len(merp)))
     ipdb.set_trace()
 
 
