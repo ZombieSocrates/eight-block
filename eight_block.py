@@ -118,12 +118,18 @@ class eightBlock():
                 next_boards_dict[mv_dir] = self.make_move(mv_dir)
         return next_boards_dict
 
-    def board_to_state(self, board):
+    def board_to_state(self, board_list):
         '''The list form of a board configuration will be helpful for making
         moves and calculating distances. In terms of repeated state checking, 
         I'm converting everything to strings
         '''
-        return ''.join([str(v) for v in board])
+        return ''.join([str(v) for v in board_list])
+
+    def state_to_board(self, state_string):
+        '''Simply the inverse of the above function. I'm honestly not sure
+        how useful this will be.
+        '''
+        return [int(v) for v in state_string]
 
 class depthFirstSearchSolver(eightBlock):
     
