@@ -147,6 +147,19 @@ class depthFirstSearchSolver(eightBlock):
                              "parent":None,
                              "path_cost":0}]
 
+    def check_top_of_stack(self):
+        '''We always begin the solve method by looking at the first stack
+        dictionary in the board_stack. There are cases (non-solveable boards) 
+        where the stack can be empty.
+
+        This method returns the first object in the stack if it exists, and 
+        returns None otherwise
+        '''
+        try:
+            top_board = self.board_stack[0]
+        except IndexError:
+            top_board = None
+        return top_board
 
     def solve(self):
         '''Docstring in with code for now...
@@ -157,12 +170,10 @@ class depthFirstSearchSolver(eightBlock):
         # its parent, the direction from that parent to the current config
         # and the cost accrued to get there 
         while self.get_misplaced_values():
-            # Fun Fact: For non-solveable boards, you can exhaust the
-            # board stack...
-            board = self.board_stack[0]
-            self.board_config = board["child"]
+            curr_board = self.check_top_of_stack()
+            self.board_config = curr_board["child"]
             curr_state = self.board_to_state(self.board_config)
-            self.path_map[curr_state] = (board["parent"], board["mv_dir"]) if board["parent"] else None
+            self.path_map[curr_state] = (curr_board["parent"], curr_board["mv_dir"]) if curr_board["parent"] else None
             if not self.get_misplaced_values():
                 print("WE SOLVED IT!!!")
                 break
@@ -177,7 +188,7 @@ class depthFirstSearchSolver(eightBlock):
                 stack_dict = {"child":next_boards[poss_move],
                               "parent":curr_state,
                               "mv_dir":poss_move,
-                              "path_cost":board["path_cost"] + 1}
+                              "path_cost":curr_board["path_cost"] + 1}
                 to_stack.append(stack_dict)
             # Now, append the items in to_stack to board_stack in
             # reverse, so that we're always moving in the same direction
@@ -200,7 +211,7 @@ class depthFirstSearchSolver(eightBlock):
             solution_path.insert(0,self.path_map[path_key])
             path_key = self.path_map[path_key][0]
 
-        ipdb.set_trace()
+        return solution_path
 
 
 class breadthFirstSearch(eightBlock):
@@ -235,6 +246,7 @@ if __name__ == "__main__":
     #     foo.display_board(new_brd)
     #     print()
     foo.solve()
+    ipdb.set_trace()
 
 
 
