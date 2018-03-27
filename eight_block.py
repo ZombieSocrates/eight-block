@@ -126,8 +126,7 @@ class eightBlock():
         return ''.join([str(v) for v in board])
 
 class depthFirstSearchSolver(eightBlock):
-    '''Notes from Tori. Use a stack. Last In, First Out
-    '''
+    
     def __init__(self, positions = None):
         '''Calls the initialization function of eightBlock (with option to 
         specify initial board configuration) and then defines two additional
@@ -186,11 +185,41 @@ class depthFirstSearchSolver(eightBlock):
             parent_to_child_dir = current_board["mv_dir"]
             self.path_map[current_state] = (parent_state, parent_to_child_dir)
 
+    def get_children(self, current_board):
+        '''After popping the current board off the stack, we then get its
+        children. All this consists of is looking up all possible moves we 
+        can make, excluding any states that we've already visited, and 
+        annotating remaining states with their parent, the direction of
+        the move to yield the child, and the new level in the search tree
+
+        returns a list of stack dictionaries representing all possible moves
+        '''
+        child_stack_dicts = []
+        poss_kids = self.get_next_boards()
+        for poss_mv in poss_kids.keys():
+            if self.board_to_state(poss_kids[poss_mv]) in self.path_map.keys():
+                continue
+            stack_dict = {"child":poss_kids[poss_mv],
+                          "parent":self.board_to_state(self.board_config),
+                          "mv_dir":poss_mv,
+                          "path_cost":current_board["path_cost"] + 1}
+            child_stack_dicts.append(stack_dict)
+        return child_stack_dicts
+
+    def children_to_stack(self, child_stack_dicts):
+        '''Inserts each object in child_stack_dicts at the front of 
+        self.board_stack in reverse order. This is so that the first
+        direction we can possibly move each time we generate children
+        will always be the next feasible candidate 
+        '''
+        for stack_dict in child_stack_dicts[::-1]:
+            self.board_stack.insert(0, stack_dict)
+
     def retrieve_solution_path(self):
-        '''Once we are at the solution state, we use that final state as
-        a key in the path_map dictionary to look up the parent state and the
-        direction between them. We keep doing this until we get all the
-        way back to the starting point of the search.
+        '''Once we find the solution state, we use it as a key in path_map
+        to look up the parent state and the direction we took to get there.
+        We then repeatedly look up the parent of the parent state until we
+        reach the initial state with no parent.
 
         Returns a list of (parent_state, direction) tuples from path_map that 
         spell out the solution found. The length of this solution_path is the 
@@ -203,15 +232,15 @@ class depthFirstSearchSolver(eightBlock):
             child_key = self.path_map[child_key][0]
         return solution_path
 
-    def display_solution_path(self, solution_path):
-        '''Simply iterates over the tuples and prints out the solution 
-        instructions line by line in the format "From [state], move [direction"
-        '''
-        for i, tup in enumerate(solution_path):
-            print("{}. From {}, move {}".format(i + 1, tup[0], tup[1]))
-
     def solve(self):
-        '''Docstring in with code for now...
+        '''The implementation of depth-first search basically just chains
+        the last five functions together. 
+
+            * look at the top of the stack, exiting if it's empty
+            * update the path_map with info from the top of the stack
+            * check to see if we're at a goal state, returning the solution if we are
+            * Otherwise, we pop that top item off the stack and get child boards
+            * Then we add these children to the top of the stack and repeat
         '''
         while self.get_misplaced_values():
             curr_board = self.check_top_of_stack()
@@ -222,24 +251,15 @@ class depthFirstSearchSolver(eightBlock):
                 print("Solution found!")
                 return self.retrieve_solution_path()
             self.board_stack.pop(0)
-            next_boards = self.get_next_boards()
-            # Generate a list of new dictionaries to go on the stack,
-            # so long as they are unseen states
-            to_stack = []
-            for poss_move in next_boards.keys():
-                if self.board_to_state(next_boards[poss_move]) in self.path_map.keys():
-                    continue
-                stack_dict = {"child":next_boards[poss_move],
-                              "parent":self.board_to_state(self.board_config),
-                              "mv_dir":poss_move,
-                              "path_cost":curr_board["path_cost"] + 1}
-                to_stack.append(stack_dict)
-            # Now, append the items in to_stack to board_stack in
-            # reverse, so that we're always moving in the same direction
-            # first, if possible
-            for stack_dict in to_stack[::-1]:
-                self.board_stack.insert(0,stack_dict)
-            print(len(self.path_map)) 
+            stack_children = self.get_children(curr_board)
+            self.children_to_stack(stack_children)
+
+    def display_solution_path(self, solution_path):
+        '''Simply iterates over the tuples and prints out the solution 
+        instructions line by line in the format "From [state], move [direction"
+        '''
+        for i, tup in enumerate(solution_path):
+            print("{}. From {}, move {}".format(i + 1, tup[0], tup[1])) 
 
 
 class breadthFirstSearch(eightBlock):
