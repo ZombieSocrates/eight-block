@@ -17,30 +17,21 @@ class eightBlock():
         self.valid_vals = [i for i in range(9)]
         self.valid_dims = [i for i in range(3)]
         self.valid_dirs = ["left","right","up","down"]
-        # CONVERT THIS TO SOMETHING THAT VALIDATES POSITIONS AND GOAL STATE
-        if positions is None:
-            random.shuffle(self.valid_vals)
-            self.board_config = self.valid_vals
-        elif isinstance(positions, list):
-            if sorted(positions) == self.valid_vals:
-                self.board_config = positions
-            else:
-                v_msg = "positions must be a permutation of integers 0-8"
-                raise ValueError(v_msg)
+        if positions:
+            self.board_config = self.validate_given_board(positions)
         else:
-            inpt_tp = type(positions).__name__
-            t_msg = "positions must be a list, not {}".format(inpt_tp)
-            raise TypeError(t_msg)
+            self.board_config = self.get_default_board("start_config")
+        # Do something similar for the goal_config 
 
-        def get_default_board(self, default_type):
+    def get_default_board(self, default_type):
         '''DOCSTRING PL0X
         '''
-            if default_type == "start_config":
-                dflt_board = self.valid_vals.copy()
-                random.shuffle(dflt_board)
-            else:
-                dflt_board = self.valid_vals[1:] + [0]
-            return dflt_board
+        if default_type == "start_config":
+            dflt_board = self.valid_vals.copy()
+            random.shuffle(dflt_board)
+        else:
+            dflt_board = self.valid_vals[1:] + [0]
+        return dflt_board
 
     def validate_given_board(self, given_board):
         '''Just makes some checks
@@ -298,7 +289,7 @@ if __name__ == "__main__":
     foo = depthFirstSearchSolver([1,2,3,4,5,6,7,0,8])
     # Display the board properly
     foo.display_board()
-    ipdb.set_trace()
+    # ipdb.set_trace()
 
     # Index into things properly
     for v in range(len(foo.valid_vals)):
