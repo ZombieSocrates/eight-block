@@ -31,7 +31,17 @@ class eightBlock():
             inpt_tp = type(positions).__name__
             t_msg = "positions must be a list, not {}".format(inpt_tp)
             raise TypeError(t_msg)
-            
+
+    def validate_given_board(self, given_board):
+        '''Just makes some checks
+        '''
+        if not isinstance(given_board, list):
+            inpt_tp = type(given_board).__name__
+            raise TypeError("Expected list, not {}".format(inpt_tp))
+        elif sorted(given_board) != self.valid_vals:
+            raise ValueError("Board must be a permutation of integers 0-8")
+        return given_board
+         
     def display_board(self, board = None):
         '''Will display a given board configuration in 3 X 3 form.
 
@@ -278,6 +288,7 @@ if __name__ == "__main__":
     foo = depthFirstSearchSolver([1,2,3,4,5,6,7,0,8])
     # Display the board properly
     foo.display_board()
+    ipdb.set_trace()
 
     # Index into things properly
     for v in range(len(foo.valid_vals)):
