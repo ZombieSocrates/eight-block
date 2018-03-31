@@ -32,6 +32,16 @@ class eightBlock():
             t_msg = "positions must be a list, not {}".format(inpt_tp)
             raise TypeError(t_msg)
 
+        def get_default_board(self, default_type):
+        '''DOCSTRING PL0X
+        '''
+            if default_type == "start_config":
+                dflt_board = self.valid_vals.copy()
+                random.shuffle(dflt_board)
+            else:
+                dflt_board = self.valid_vals[1:] + [0]
+            return dflt_board
+
     def validate_given_board(self, given_board):
         '''Just makes some checks
         '''
