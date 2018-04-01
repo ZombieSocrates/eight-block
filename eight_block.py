@@ -69,19 +69,13 @@ class eightBlock():
                 print(board[3*r:3*(r + 1)])
 
     def get_misplaced_values(self):
-        '''scans self.board_state and returns a list of misplaced values
-        against the assumed goal state of [1,2,3,4,5,6,7,8,0].
-
-        By extension, this will return an empty list if the board is solved
-
-        TKTK: RIGHT NOW THIS ASSUMES A GOAL STATE. This would need to change
-        if goal_state was ever defined as a part of the class itself
+        '''Compares self.board_state against self.goal_state, returning an
+        array of the actual values that are misplaced. By extension, this 
+        returns an empty list if the board is solved.
         '''
         misplaced = []
-        for v in self.board_state:
-            if (v == 0) and (self.board_state.index(v) != 8):
-                misplaced.append(v)
-            elif (v != 0) and (self.board_state.index(v) != (v - 1)):
+        for i, v in enumerate(self.board_state):
+            if self.board_state[i] != self.goal_state[i]:
                 misplaced.append(v)
         return misplaced
 
@@ -150,7 +144,7 @@ class eightBlock():
 
 class depthFirstSearchSolver(eightBlock):
     
-    def __init__(self, positions = None):
+    def __init__(self, start_state = None, goal_state = None):
         '''Calls the initialization function of eightBlock (with option to 
         specify initial board configuration) and then defines two additional
         class level attributes
@@ -163,7 +157,7 @@ class depthFirstSearchSolver(eightBlock):
             representation of the initial board configuration, along with
             a marker indicating we're at depth 0 in the search tree
         '''
-        super().__init__(positions)
+        super().__init__(start_state, goal_state)
         self.path_map = {}
         self.board_stack = [{"child":self.board_state, 
                              "parent":None,
@@ -294,7 +288,9 @@ class breadthFirstSearch(eightBlock):
 
 if __name__ == "__main__":
     
-    foo = depthFirstSearchSolver([1,2,3,4,5,6,7,0,8])
+    in_board = [1,2,3,4,5,6,7,0,8]
+    goal_board = None # defaults to [1,2,3,4,5,6,7,8,0]
+    foo = depthFirstSearchSolver(in_board, goal_board)
     # Display the board properly
     foo.display_board()
     # ipdb.set_trace()
