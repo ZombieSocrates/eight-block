@@ -282,7 +282,11 @@ class depthFirstSearchSolver(eightBlock):
 class breadthFirstSearchSolver(eightBlock):
     
     def __init__(self, start_state = None, goal_state = None):
-        '''Basically the same as
+        '''Basically the same as the init of depthFirstSearchSolver, as is the 
+        case for most of these docstrings.
+
+        The biggest difference here is that I'm calling the structure for
+        storing child states the queue instead of the stack.
         '''
         super().__init__(start_state, goal_state)
         self.path_map = {}
@@ -290,12 +294,40 @@ class breadthFirstSearchSolver(eightBlock):
                              "parent":None,
                              "path_cost":0}]
 
+    def check_queue(self):
+        '''We always begin the solve method by looking at the first board
+        dictionary in the board_queue. This method returns the first object 
+        in the queue if it exists, and returns None otherwise
+        '''
+        try:
+            top_board = self.board_queue[0]
+        except IndexError:
+            print("Initial board configuration not solveable")
+            top_board = None
+        return top_board
+
+    def update_path_map(self, current_board):
+        '''Once we have a board from the top of the queue, we update 
+        the path_map. 
+        '''
+        self.board_state = current_board["child"]
+        current_state = self.board_to_state(self.board_state)
+        parent_state = current_board["parent"]
+        if parent_state is None:
+            self.path_map[current_state] = None
+        else:
+            parent_to_child_dir = current_board["mv_dir"]
+            self.path_map[current_state] = (parent_state, parent_to_child_dir)
+
 
 
 if __name__ == "__main__":
+
+    # TKTK look at Tori's assignment and copy the EASY, MEDIUM, HARD, and 
+    # GOAL states
     
     in_board = [1,2,3,4,5,6,7,0,8]
-    goal_board = None # defaults to [1,2,3,4,5,6,7,8,0]
+    goal_board = None #defaults to [1,2,3,4,5,6,7,8,0]
     foo = depthFirstSearchSolver(in_board, goal_board)
     # Display the board properly
     foo.display_board()
