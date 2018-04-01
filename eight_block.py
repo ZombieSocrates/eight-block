@@ -336,7 +336,13 @@ class breadthFirstSearchSolver(eightBlock):
                           "mv_dir":poss_mv,
                           "path_cost":current_board["path_cost"] + 1}
             child_queue_dicts.append(queue_dict)
-        return child_queue_dicts 
+        return child_queue_dicts
+
+    def children_to_queue(self, child_queue_dicts):
+        '''Chucks children at the back of the queue. This is the big difference 
+        between depth-first and breadth-first search 
+        '''
+        self.board_queue.extend(child_queue_dicts) 
 
 
 if __name__ == "__main__":
