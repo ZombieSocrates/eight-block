@@ -279,10 +279,16 @@ class depthFirstSearchSolver(eightBlock):
             print("{}. From {}, move {}".format(i + 1, tup[0], tup[1])) 
 
 
-class breadthFirstSearch(eightBlock):
-    '''Notes from tori: use a queue. First in, first out
-    '''
-    pass
+class breadthFirstSearchSolver(eightBlock):
+    
+    def __init__(self, start_state = None, goal_state = None):
+        '''Basically the same as
+        '''
+        super().__init__(start_state, goal_state)
+        self.path_map = {}
+        self.board_queue = [{"child":self.board_state,
+                             "parent":None,
+                             "path_cost":0}]
 
 
 
