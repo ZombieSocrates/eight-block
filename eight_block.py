@@ -387,34 +387,35 @@ if __name__ == "__main__":
     # TKTK look at Tori's assignment and copy the EASY, MEDIUM, HARD, and 
     # GOAL states
     
-    in_board = None#[1,2,3,4,5,6,7,0,8]
-    goal_board = None #defaults to [1,2,3,4,5,6,7,8,0]
-    foo = breadthFirstSearchSolver(in_board, goal_board)
-    # Display the board properly
-    foo.display_board()
-    # ipdb.set_trace()
+    #1: Create initial board and goal board
+    in_board = [1,2,3,4,5,6,7,0,8]
+    goal_board = None # defaults to [1,2,3,4,5,6,7,8,0]
 
-    # Index into things properly
+    #2. Initialize solver for each algorithm
+    DFS = depthFirstSearchSolver(in_board, goal_board)
+    BFS = breadthFirstSearchSolver(in_board, goal_board)
+    solvers = [DFS, BFS]
+    
+    #3. Display, index, and goal-state check
+    foo = random.choice(solvers)
     for v in range(len(foo.valid_vals)):
         r = foo.get_row(v)
         c = foo.get_col(v)
         print("{} located at position ({},{})".format(v, r, c))
-
-    # Test whether the board is solved
     wrongs = foo.get_misplaced_values()
     if not wrongs:
         print("Board is solved!")
     else:
         print("These are out of place: {}".format(wrongs))
-
-    # print("Making possible moves")
-    # for mv_dir, new_brd in foo.get_next_boards().items():
-    #     print(mv_dir)
-    #     foo.display_board(new_brd)
-    #     print()
-    merp = foo.solve()
-    print("Cost of solution found: {}".format(len(merp)))
+    print("Push past break point to solve each board")
     ipdb.set_trace()
+    
+    # Get solution for each and compare cost
+    for s in solvers:
+        sln = s.solve()
+        nm = type(s).__name__
+        cst = len(sln) if sln else "N/A"
+        print("Solution cost for {}: {}".format(nm, cst))
 
 
 
