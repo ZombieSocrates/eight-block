@@ -342,7 +342,44 @@ class breadthFirstSearchSolver(eightBlock):
         '''Chucks children at the back of the queue. This is the big difference 
         between depth-first and breadth-first search 
         '''
-        self.board_queue.extend(child_queue_dicts) 
+        self.board_queue.extend(child_queue_dicts)
+
+    def retrieve_solution_path(self):
+        solution_path = []
+        child_key = self.board_to_state(self.board_state)
+        while self.path_map.get(child_key,""):
+            solution_path.insert(0, self.path_map[child_key])
+            child_key = self.path_map[child_key][0]
+        return solution_path
+
+    def solve(self):
+        '''The implementation of breadth-first search basically just chains
+        the last five functions together. 
+
+            * look at the top of the queue, exiting if it's empty
+            * update the path_map with info from the top of the queue
+            * check to see if we're at a goal state, returning the solution if we are
+            * Otherwise, we take that top item off the queue and get child boards
+            * Then we add these children to the back of the queue and repeat
+        '''
+        while self.get_misplaced_values():
+            curr_board = self.check_queue()
+            if curr_board is None:
+                return curr_board
+            self.update_path_map(curr_board)
+            if not self.get_misplaced_values():
+                print("Solution found!")
+                return self.retrieve_solution_path()
+            self.board_queue.pop(0)
+            queue_children = self.get_children(curr_board)
+            self.children_to_queue(queue_children)
+
+    def display_solution_path(self, solution_path):
+        '''Simply iterates over the tuples and prints out the solution 
+        instructions line by line in the format "From [state], move [direction"
+        '''
+        for i, tup in enumerate(solution_path):
+            print("{}. From {}, move {}".format(i + 1, tup[0], tup[1])) 
 
 
 if __name__ == "__main__":
@@ -350,9 +387,9 @@ if __name__ == "__main__":
     # TKTK look at Tori's assignment and copy the EASY, MEDIUM, HARD, and 
     # GOAL states
     
-    in_board = [1,2,3,4,5,6,7,0,8]
+    in_board = None#[1,2,3,4,5,6,7,0,8]
     goal_board = None #defaults to [1,2,3,4,5,6,7,8,0]
-    foo = depthFirstSearchSolver(in_board, goal_board)
+    foo = breadthFirstSearchSolver(in_board, goal_board)
     # Display the board properly
     foo.display_board()
     # ipdb.set_trace()
