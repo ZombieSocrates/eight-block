@@ -4,37 +4,45 @@ import ipdb
 
 class eightBlock():
 
-    def __init__(self, positions = None):
-        '''The most important step in this initial init is defining the initial 
-        board configuration. Calling init with no positions will just randomly 
-        shuffle valid_vals. Otherwise, we'll start with the positions given, 
-        assuming it is a list containing only integers 0 through 8
+    def __init__(self, start_state = None, goal_state = None):
+        '''Declares the valid tile values, row and column indices, and 
+        movement directions applicable to any board. Then uses the optional 
+        arguments start_state and goal_state to declare the initial positions 
+        of the puzzle (`board_state`) and the `goal_state` we're aiming for, 
+        respectively.
 
-
-        TKTK Might want to initialize each of these with a goal state, too. Just
-        to be explicit about it
+        Assuming they meet the conditions in the `validate` method, both 
+        start_state and goal_state can be user configured. Otherwise, defaults 
+        will be supplied by the `get_default` method.
         '''
         self.valid_vals = [i for i in range(9)]
         self.valid_dims = [i for i in range(3)]
         self.valid_dirs = ["left","right","up","down"]
-        if positions:
-            self.board_config = self.validate_given_board(positions)
+        if start_state:
+            self.board_state = self.validate(start_state)
         else:
-            self.board_config = self.get_default_board("start_config")
-        # Do something similar for the goal_config 
+            self.board_state = self.get_default("start")
+        if goal_state:
+            self.goal_state = self.validate(goal_state)
+        else:
+            self.goal_state = self.get_default("goal") 
 
-    def get_default_board(self, default_type):
-        '''DOCSTRING PL0X
+    def get_default(self, default_type):
+        '''Running this with the argument `start` returns a shuffling of 0-8 as
+        the initial board configuration. Otherwise, this method returns the 
+        default goal configuration of [1,2,3,4,5,6,7,8,0]
         '''
-        if default_type == "start_config":
+        if default_type == "start":
             dflt_board = self.valid_vals.copy()
             random.shuffle(dflt_board)
         else:
             dflt_board = self.valid_vals[1:] + [0]
         return dflt_board
 
-    def validate_given_board(self, given_board):
-        '''Just makes some checks
+    def validate(self, given_board):
+        '''Throws errors if you try to pass in a board configuration that isn't 
+        a permutation of [0,1,2,3,4,5,6,7,8]. Otherwise, returns the board that 
+        you pass in.
         '''
         if not isinstance(given_board, list):
             inpt_tp = type(given_board).__name__
@@ -47,7 +55,7 @@ class eightBlock():
         '''Will display a given board configuration in 3 X 3 form.
 
         If called with board = None, we'll simply display whatever the current 
-        value of self.board_config is. You can also pass in a possible child
+        value of self.board_state is. You can also pass in a possible child
         configuration like those output from the move left, right, up, and down 
         functions. If given an empty list, this will simply print out a message 
         about the move being invalid.
@@ -56,12 +64,12 @@ class eightBlock():
             print("Invalid move...cannot display")
         else:
             if board is None:
-                board = self.board_config
+                board = self.board_state
             for r in self.valid_dims:
                 print(board[3*r:3*(r + 1)])
 
     def get_misplaced_values(self):
-        '''scans self.board_config and returns a list of misplaced values
+        '''scans self.board_state and returns a list of misplaced values
         against the assumed goal state of [1,2,3,4,5,6,7,8,0].
 
         By extension, this will return an empty list if the board is solved
@@ -70,10 +78,10 @@ class eightBlock():
         if goal_state was ever defined as a part of the class itself
         '''
         misplaced = []
-        for v in self.board_config:
-            if (v == 0) and (self.board_config.index(v) != 8):
+        for v in self.board_state:
+            if (v == 0) and (self.board_state.index(v) != 8):
                 misplaced.append(v)
-            elif (v != 0) and (self.board_config.index(v) != (v - 1)):
+            elif (v != 0) and (self.board_state.index(v) != (v - 1)):
                 misplaced.append(v)
         return misplaced
 
@@ -81,14 +89,14 @@ class eightBlock():
         '''Given a value 0-8, this function will return the row where that 
         value currently is
         '''
-        curr_ind = self.board_config.index(board_val)
+        curr_ind = self.board_state.index(board_val)
         return int(curr_ind/3)
 
     def get_col(self, board_val):
         '''Given a value 0-8, this function will return the column where that 
         value currently is
         '''
-        curr_ind = self.board_config.index(board_val)
+        curr_ind = self.board_state.index(board_val)
         return curr_ind % 3
 
     def make_move(self, mv_dir):
@@ -103,7 +111,7 @@ class eightBlock():
         dim_chk = self.get_row(0) if mv_dir in ["up","down"] else self.get_col(0)
         chk_val = -1 if mv_dir in ["left","up"] else 1
         if (dim_chk + chk_val) in self.valid_dims:
-            next_board.extend(self.board_config)
+            next_board.extend(self.board_state)
             z_ind = next_board.index(0)
             mv_amt = 3 * chk_val if mv_dir in ["up","down"] else chk_val
             swap_v = next_board[z_ind + mv_amt]
@@ -157,7 +165,7 @@ class depthFirstSearchSolver(eightBlock):
         '''
         super().__init__(positions)
         self.path_map = {}
-        self.board_stack = [{"child":self.board_config, 
+        self.board_stack = [{"child":self.board_state, 
                              "parent":None,
                              "path_cost":0}]
 
@@ -180,7 +188,7 @@ class depthFirstSearchSolver(eightBlock):
         '''Once we have a board from the top of the stack, we need to update 
         the path_map, which keeps track of visited states and all of the 
         parent-to-child relationships between those states. After setting 
-        self.board_config as the `child` attribute of current_board, we then 
+        self.board_state as the `child` attribute of current_board, we then 
         use current_board to make this update.
 
         The path_map dictionary being updated has strings representing every 
@@ -191,8 +199,8 @@ class depthFirstSearchSolver(eightBlock):
         The only exception to this dictionary structure is that the initial 
         state key will have a value of None, since it has no parent.
         '''
-        self.board_config = current_board["child"]
-        current_state = self.board_to_state(self.board_config)
+        self.board_state = current_board["child"]
+        current_state = self.board_to_state(self.board_state)
         parent_state = current_board["parent"]
         if parent_state is None:
             self.path_map[current_state] = None
@@ -215,7 +223,7 @@ class depthFirstSearchSolver(eightBlock):
             if self.board_to_state(poss_kids[poss_mv]) in self.path_map.keys():
                 continue
             stack_dict = {"child":poss_kids[poss_mv],
-                          "parent":self.board_to_state(self.board_config),
+                          "parent":self.board_to_state(self.board_state),
                           "mv_dir":poss_mv,
                           "path_cost":current_board["path_cost"] + 1}
             child_stack_dicts.append(stack_dict)
@@ -241,7 +249,7 @@ class depthFirstSearchSolver(eightBlock):
         number of levels deep in the tree we had to go to find this solution
         '''
         solution_path = []
-        child_key = self.board_to_state(self.board_config)
+        child_key = self.board_to_state(self.board_state)
         while self.path_map.get(child_key,""):
             solution_path.insert(0, self.path_map[child_key])
             child_key = self.path_map[child_key][0]
