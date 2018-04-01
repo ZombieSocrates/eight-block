@@ -390,10 +390,13 @@ if __name__ == "__main__":
 
     # TKTK look at Tori's assignment and copy the EASY, MEDIUM, HARD, and 
     # GOAL states
+
+    # TKTK 2: Right now, you're parameterizing the directions as "the way that
+    # the zero moves," which is not wrong but just kind of goofy
     
     #1: Create initial board and goal board
-    in_board = [1,2,3,4,5,6,7,0,8]
-    goal_board = None # defaults to [1,2,3,4,5,6,7,8,0]
+    in_board = [1,3,4,8,6,2,7,0,5]
+    goal_board = [1,2,3,8,0,4,7,6,5]
 
     #2. Initialize solver for each algorithm
     DFS = depthFirstSearchSolver(in_board, goal_board)
@@ -402,6 +405,7 @@ if __name__ == "__main__":
     
     #3. Display, index, and goal-state check
     foo = random.choice(solvers)
+    foo.display_board()
     for v in range(len(foo.valid_vals)):
         r = foo.get_row(v)
         c = foo.get_col(v)
@@ -412,14 +416,14 @@ if __name__ == "__main__":
     else:
         print("These are out of place: {}".format(wrongs))
     print("Getting ready to test each solver...")
-    ipdb.set_trace()
     
     # Get solution for each and compare cost
-    for s in solvers:
-        sln = s.solve(verbose = True)
-        nm = type(s).__name__
+    for solver in solvers:
+        sln = solver.solve(verbose = True)
+        nm = type(solver).__name__
         cst = len(sln) if sln else "N/A"
         print("Solution cost for {}: {}".format(nm, cst))
+        ipdb.set_trace()
 
 
 
