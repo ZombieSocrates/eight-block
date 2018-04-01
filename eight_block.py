@@ -276,8 +276,7 @@ class depthFirstSearchSolver(eightBlock):
         instructions line by line in the format "From [state], move [direction"
         '''
         for i, tup in enumerate(solution_path):
-            print("{}. From {}, move {}".format(i + 1, tup[0], tup[1])) 
-
+            print("{}. From {}, move {}".format(i + 1, tup[0], tup[1]))
 
 class breadthFirstSearchSolver(eightBlock):
     
@@ -319,6 +318,25 @@ class breadthFirstSearchSolver(eightBlock):
             parent_to_child_dir = current_board["mv_dir"]
             self.path_map[current_state] = (parent_state, parent_to_child_dir)
 
+    def get_children(self, current_board):
+        '''After popping the current board off the queue, we then get its
+        children, excluding any states that we've already visited. We 
+        annotate unseen child states with their parent, the direction of
+        the move to yield the child, and the new level in the search tree
+
+        returns a list of queue dictionaries representing all possible moves
+        '''
+        child_queue_dicts = []
+        poss_kids = self.get_next_boards()
+        for poss_mv in poss_kids.keys():
+            if self.board_to_state(poss_kids[poss_mv]) in self.path_map.keys():
+                continue
+            queue_dict = {"child":poss_kids[poss_mv],
+                          "parent":self.board_to_state(self.board_state),
+                          "mv_dir":poss_mv,
+                          "path_cost":current_board["path_cost"] + 1}
+            child_queue_dicts.append(queue_dict)
+        return child_queue_dicts 
 
 
 if __name__ == "__main__":
