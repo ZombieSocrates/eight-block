@@ -249,7 +249,7 @@ class depthFirstSearchSolver(eightBlock):
             child_key = self.path_map[child_key][0]
         return solution_path
 
-    def solve(self):
+    def solve(self, verbose = False):
         '''The implementation of depth-first search basically just chains
         the last five functions together. 
 
@@ -270,6 +270,8 @@ class depthFirstSearchSolver(eightBlock):
             self.board_stack.pop(0)
             stack_children = self.get_children(curr_board)
             self.children_to_stack(stack_children)
+            if verbose and len(self.path_map) % 1000 == 0:
+                print("Checked {} states".format(len(self.path_map)))
 
     def display_solution_path(self, solution_path):
         '''Simply iterates over the tuples and prints out the solution 
@@ -352,7 +354,7 @@ class breadthFirstSearchSolver(eightBlock):
             child_key = self.path_map[child_key][0]
         return solution_path
 
-    def solve(self):
+    def solve(self, verbose = False):
         '''The implementation of breadth-first search basically just chains
         the last five functions together. 
 
@@ -373,6 +375,8 @@ class breadthFirstSearchSolver(eightBlock):
             self.board_queue.pop(0)
             queue_children = self.get_children(curr_board)
             self.children_to_queue(queue_children)
+            if verbose and len(self.path_map) % 1000 == 0:
+                print("Checked {} states".format(len(self.path_map)))
 
     def display_solution_path(self, solution_path):
         '''Simply iterates over the tuples and prints out the solution 
@@ -407,12 +411,12 @@ if __name__ == "__main__":
         print("Board is solved!")
     else:
         print("These are out of place: {}".format(wrongs))
-    print("Push past break point to solve each board")
+    print("Getting ready to test each solver...")
     ipdb.set_trace()
     
     # Get solution for each and compare cost
     for s in solvers:
-        sln = s.solve()
+        sln = s.solve(verbose = True)
         nm = type(s).__name__
         cst = len(sln) if sln else "N/A"
         print("Solution cost for {}: {}".format(nm, cst))
