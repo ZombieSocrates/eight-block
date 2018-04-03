@@ -102,12 +102,12 @@ class eightBlock():
             d_msg = "direction must be {}".format(", ".join(self.valid_dirs))
             raise ValueError(d_msg)
         next_board = []
-        dim_chk = self.get_row(0) if mv_dir in ["up","down"] else self.get_col(0)
-        chk_val = -1 if mv_dir in ["left","up"] else 1
+        dim_chk = self.get_row(0) if mv_dir in ["down","up"] else self.get_col(0)
+        chk_val = -1 if mv_dir in ["right","down"] else 1
         if (dim_chk + chk_val) in self.valid_dims:
             next_board.extend(self.board_state)
             z_ind = next_board.index(0)
-            mv_amt = 3 * chk_val if mv_dir in ["up","down"] else chk_val
+            mv_amt = 3 * chk_val if mv_dir in ["down","up"] else chk_val
             swap_v = next_board[z_ind + mv_amt]
             next_board[z_ind + mv_amt] = 0
             next_board[z_ind] = swap_v
