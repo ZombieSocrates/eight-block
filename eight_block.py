@@ -79,24 +79,29 @@ class eightBlock():
                 misplaced.append(v)
         return misplaced
 
-    def get_row(self, board_val):
+    def get_row(self, board_val, board = None):
         '''Given a value 0-8, this function will return the row where that 
-        value currently is
+        value currently is. If not explicitly given a board, it will search
+        in the current board_state. 
         '''
-        curr_ind = self.board_state.index(board_val)
+        if board is None:
+            board = self.board_state
+        curr_ind = self.validate(board).index(board_val)
         return int(curr_ind/3)
 
-    def get_col(self, board_val):
+    def get_col(self, board_val, board = None):
         '''Given a value 0-8, this function will return the column where that 
         value currently is
         '''
-        curr_ind = self.board_state.index(board_val)
+        if board is None:
+            board = self.board_state
+        curr_ind = self.validate(board).index(board_val)
         return curr_ind % 3
 
     def make_move(self, mv_dir):
-        '''Moves the zero in the current board configuration in the direction 
+        '''Moves a tile in the current board configuration in the direction 
         specified by mv_dir. Will return the updated configuration if that 
-        direction is valid. Returns an empty list otherwise
+        direction is valid move. Returns an empty list otherwise
         '''
         if mv_dir not in self.valid_dirs:
             d_msg = "direction must be {}".format(", ".join(self.valid_dirs))
@@ -401,6 +406,7 @@ if __name__ == "__main__":
     #2. Initialize solver for each algorithm
     DFS = depthFirstSearchSolver(in_board, goal_board)
     BFS = breadthFirstSearchSolver(in_board, goal_board)
+    ipdb.set_trace()
     solvers = [DFS, BFS]
     
     #3. Display, index, and goal-state check
