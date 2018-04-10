@@ -68,14 +68,17 @@ class eightBlock():
             for r in self.valid_dims:
                 print(board[3*r:3*(r + 1)])
 
-    def get_misplaced_values(self):
-        '''Compares self.board_state against self.goal_state, returning an
+    def get_misplaced_values(self, board = None):
+        '''Compares a given board against self.goal_state, returning an
         array of the actual values that are misplaced. By extension, this 
-        returns an empty list if the board is solved.
+        returns an empty list if the board is solved. If not explicitly given 
+        a board, it will make the comparison with the current board_state.
         '''
         misplaced = []
-        for i, v in enumerate(self.board_state):
-            if self.board_state[i] != self.goal_state[i]:
+        if board is None:
+            board = self.board_state
+        for i, v in enumerate(self.validate(board)):
+            if self.validate(board)[i] != self.goal_state[i]:
                 misplaced.append(v)
         return misplaced
 
