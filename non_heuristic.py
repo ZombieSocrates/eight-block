@@ -243,5 +243,54 @@ class breadthFirstSearchSolver(eightBlock):
         for i, tup in enumerate(solution_path):
             print("{}. From {}, move {}".format(i + 1, tup[0], tup[1]))
 
+# TODO: Iterative Deepening Depth First Search
+# Essentially repeats depth first search, but will only generate
+# Children to depth of D each time. The first step is obviously
+# to copy the majority of DFS above
+
+# Trick here: Need to differentiate between the stack being empty
+# because 
+
+class iterativeDeepeningSolver(depthFirstSearchSolver):
+
+    def __init__(self, start_state = None, goal_state = None):
+        '''Basically the same as the init of depthFirstSearchSolver, as is the 
+        case for most of these docstrings.
+
+        The biggest difference here is that I'm calling the structure for
+        storing child states the queue instead of the stack.
+        '''
+        super().__init__(start_state, goal_state)
+        self.path_map = {}
+        self.board_stack = [{"child":self.board_state,
+                             "parent":None,
+                             "path_cost":0}]
+        self.depth_limit = 0
+
+    def solve(self, verbose = False):
+        '''START HERE. Need to only get children on an object if
+        curr_board["path_cost"] < self.depth_limit 
+
+            * look at the top of the stack, exiting if it's empty (UPDATE TO INCREMENT)
+            * update the path_map with info from the top of the stack
+            * check to see if we're at a goal state, returning the solution if we are
+            * Otherwise, we pop that top item off the stack and get child boards
+            * Then we add these children to the top of the stack and repeat
+        '''
+        while self.get_misplaced_values():
+            curr_board = self.check_top_of_stack()
+            if curr_board is None:
+                return curr_board
+            self.update_path_map(curr_board)
+            if not self.get_misplaced_values():
+                print("Solution found!")
+                return self.retrieve_solution_path()
+            self.board_stack.pop(0)
+            stack_children = self.get_children(curr_board)
+            self.children_to_stack(stack_children)
+            if verbose and len(self.path_map) % 1000 == 0:
+                print("Checked {} states".format(len(self.path_map)))
+
+
 if __name__ == "__main__":
     pass 
