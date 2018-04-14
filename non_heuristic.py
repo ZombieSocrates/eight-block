@@ -1,4 +1,5 @@
 from base_board import eightBlock
+import ipdb
 
 class depthFirstSearchSolver(eightBlock):
     
@@ -262,9 +263,10 @@ class iterativeDeepeningSolver(depthFirstSearchSolver):
         '''
         super().__init__(start_state, goal_state)
         self.path_map = {}
-        self.board_stack = [{"child":self.board_state,
-                             "parent":None,
-                             "path_cost":0}]
+        self.board_zero = {"child":self.board_state,
+                           "parent":None,
+                           "path_cost":0}
+        self.board_stack = [self.board_zero]
         self.depth_limit = 0
 
     def solve(self, verbose = False):
@@ -281,6 +283,25 @@ class iterativeDeepeningSolver(depthFirstSearchSolver):
             curr_board = self.check_top_of_stack()
             if curr_board is None:
                 return curr_board
+            elif curr_board["path_cost"] > self.depth_limit:
+                # continue through the list until you find something
+                # with path_cost less than depth limit. Move it to 
+                # the front if you find it. Otherwise, refresh everything
+                # and increment
+                curr_board = None 
+                for ind, nxt_board in enumerate(self.board_stack):
+                    if nxt_board["path_cost"] <= self.depth_limit:
+                        curr_board = self.board_stack.pop(ind)
+                        self.board_stack.insert(0,curr_board)
+                        break
+                if curr_board is None:
+                    print("Checked up to depth {}".format(self.depth_limit))
+                    self.path_map = {}
+                    self.board_stack = [self.board_zero]
+                    self.depth_limit += 1
+                    print("New depth limit = {}".format(self.depth_limit))
+                    ipdb.set_trace()
+                    continue
             self.update_path_map(curr_board)
             if not self.get_misplaced_values():
                 print("Solution found!")
@@ -293,4 +314,8 @@ class iterativeDeepeningSolver(depthFirstSearchSolver):
 
 
 if __name__ == "__main__":
-    pass 
+    in_board = [1,3,4,8,6,2,7,0,5]
+    goal_board = [1,2,3,8,0,4,7,6,5]
+
+    IDS = iterativeDeepeningSolver(in_board, goal_board)
+    blah = IDS.solve()
