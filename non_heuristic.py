@@ -269,6 +269,24 @@ class iterativeDeepeningSolver(depthFirstSearchSolver):
         self.board_stack = [self.board_zero]
         self.depth_limit = 0
 
+    def dig_back_through_stack(self):
+        '''If the board on the very top of the stack at any given point
+        has path cost greater than self.depth_limit, we need to dig
+        back through and make sure we find an appropriate board.
+
+        This function will return the first board it finds in the stack
+        with a cost less than or equal to the current depth limit and move
+        it to the very top of the stack so that it becomes the next board to
+        be visited. If no such board can be found, it will return None
+        '''
+        to_the_front = None
+        for stack_index, stack_board in enumerate(self.board_stack):
+            if stack_board["path_cost"] <= self.depth_limit:
+                to_the_front = self.board_stack.pop(stack_index)
+                self.board_stack.insert(0, to_the_front)
+                break
+        return to_the_front
+
     def solve(self, verbose = False):
         '''START HERE. Need to only get children on an object if
         curr_board["path_cost"] < self.depth_limit 
@@ -288,12 +306,7 @@ class iterativeDeepeningSolver(depthFirstSearchSolver):
                 # with path_cost less than depth limit. Move it to 
                 # the front if you find it. Otherwise, refresh everything
                 # and increment
-                curr_board = None 
-                for ind, nxt_board in enumerate(self.board_stack):
-                    if nxt_board["path_cost"] <= self.depth_limit:
-                        curr_board = self.board_stack.pop(ind)
-                        self.board_stack.insert(0,curr_board)
-                        break
+                curr_board = self.dig_back_through_stack()
                 if curr_board is None:
                     print("Checked up to depth {}".format(self.depth_limit))
                     self.path_map = {}
