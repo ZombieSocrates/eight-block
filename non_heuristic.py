@@ -244,14 +244,6 @@ class breadthFirstSearchSolver(eightBlock):
         for i, tup in enumerate(solution_path):
             print("{}. From {}, move {}".format(i + 1, tup[0], tup[1]))
 
-# TODO: Iterative Deepening Depth First Search
-# Essentially repeats depth first search, but will only generate
-# Children to depth of D each time. The first step is obviously
-# to copy the majority of DFS above
-
-# Trick here: Need to differentiate between the stack being empty
-# because 
-
 class iterativeDeepeningSolver(depthFirstSearchSolver):
 
     def __init__(self, start_state = None, goal_state = None):
@@ -287,11 +279,34 @@ class iterativeDeepeningSolver(depthFirstSearchSolver):
                 break
         return to_the_front
 
-    def solve(self, verbose = False):
-        '''START HERE. Need to only get children on an object if
-        curr_board["path_cost"] < self.depth_limit 
+    def deepen_and_restart(self, verbose = False):
+        '''If the method above doesn't return a valid board from the stack, we
+        know that we need to iteratively deepen. That means we:
 
-            * look at the top of the stack, exiting if it's empty (UPDATE TO INCREMENT)
+            * reset the board_stack to what it was at the __init__ call
+            * clear out the path map to be empty once again
+            * increase the depth limit by one
+
+        This allows us to restart the entire search, but just go deeper the
+        next time.
+        '''
+        self.path_map = {}
+        self.board_stack = [self.board_zero]
+        self.depth_limit += 1
+        if verbose:
+            print("Checked up to depth {}".format(self.depth_limit - 1))
+            print("Restarting with depth limit {}".format(self.depth_limit))
+
+    def solve(self, verbose = False):
+        '''Iterative deepening is basically just a modification of depth-first 
+        search. 
+
+            * look at the top of the stack, exiting if it's entirely empty
+            * if the item at the top is at a depth above the depth limit, scan 
+            the rest of the stack for things with an appropriate depth
+            * if you don't find any thing, increment depth limit and restart
+            * otherwise, pop that thing to the front of the stack and continue
+            as normal
             * update the path_map with info from the top of the stack
             * check to see if we're at a goal state, returning the solution if we are
             * Otherwise, we pop that top item off the stack and get child boards
@@ -302,18 +317,9 @@ class iterativeDeepeningSolver(depthFirstSearchSolver):
             if curr_board is None:
                 return curr_board
             elif curr_board["path_cost"] > self.depth_limit:
-                # continue through the list until you find something
-                # with path_cost less than depth limit. Move it to 
-                # the front if you find it. Otherwise, refresh everything
-                # and increment
                 curr_board = self.dig_back_through_stack()
                 if curr_board is None:
-                    print("Checked up to depth {}".format(self.depth_limit))
-                    self.path_map = {}
-                    self.board_stack = [self.board_zero]
-                    self.depth_limit += 1
-                    print("New depth limit = {}".format(self.depth_limit))
-                    ipdb.set_trace()
+                    self.deepen_and_restart(verbose = verbose)
                     continue
             self.update_path_map(curr_board)
             if not self.get_misplaced_values():
@@ -331,4 +337,4 @@ if __name__ == "__main__":
     goal_board = [1,2,3,8,0,4,7,6,5]
 
     IDS = iterativeDeepeningSolver(in_board, goal_board)
-    blah = IDS.solve()
+    blah = IDS.solve(verbose = True)
