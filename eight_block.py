@@ -1,7 +1,8 @@
 import random
 import ipdb
 
-from non_heuristic import depthFirstSearchSolver, breadthFirstSearchSolver
+from non_heuristic import depthFirstSearchSolver, breadthFirstSearchSolver, \
+iterativeDeepeningSolver
 
 
 if __name__ == "__main__":
@@ -16,8 +17,9 @@ if __name__ == "__main__":
     #2. Initialize solver for each algorithm
     DFS = depthFirstSearchSolver(in_board, goal_board)
     BFS = breadthFirstSearchSolver(in_board, goal_board)
+    IDS = iterativeDeepeningSolver(in_board, goal_board)
     ipdb.set_trace()
-    solvers = [DFS, BFS]
+    solvers = [DFS, BFS, IDS]
     
     #3. Display, index, and goal-state check
     foo = random.choice(solvers)

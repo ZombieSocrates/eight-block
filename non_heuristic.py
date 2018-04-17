@@ -333,8 +333,4 @@ class iterativeDeepeningSolver(depthFirstSearchSolver):
 
 
 if __name__ == "__main__":
-    in_board = [1,3,4,8,6,2,7,0,5]
-    goal_board = [1,2,3,8,0,4,7,6,5]
-
-    IDS = iterativeDeepeningSolver(in_board, goal_board)
-    blah = IDS.solve(verbose = True)
+    pass
