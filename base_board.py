@@ -79,12 +79,16 @@ class eightBlock():
         array of the actual values that are misplaced. By extension, this 
         returns an empty list if the board is solved. If not explicitly given 
         a board, it will make the comparison with the current board_state.
+
+        For the purposes of using this in calculating heuristics, 0 is not
+        counted as a misplaced value. It's a blank tile, and there's no way 
+        it can be the only wrong value anyway. 
         '''
         misplaced = []
         if board is None:
             board = self.board_state
         for i, v in enumerate(self.validate(board)):
-            if self.validate(board)[i] != self.goal_state[i]:
+            if self.validate(board)[i] != self.goal_state[i] and v!= 0:
                 misplaced.append(v)
         return misplaced
 
