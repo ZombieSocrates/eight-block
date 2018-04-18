@@ -1,19 +1,23 @@
 from base_board import eightBlock
 import ipdb
 
-'''
-each of these can be initialized from an eight block
-class, but we might also want to reserve the right to
-call different heuristics as well
-'''
-
 class baseHeuristicSolver(eightBlock):
 
     def __init__(self, heuristic, start_state = None, goal_state = None):
+        '''
+        This class only contains the methods for calculating any possible 
+        heuristic that we might want to use. Each of these heuristic methods 
+        will be bound to the attribute `calculate_heuristic` via a string.
 
+        The only rule for heuristics that I see right now is that they need
+        to support a board = None default like get_misplaced_values() and
+        get_row()
+        '''
         super().__init__(start_state, goal_state)
+        #TKTK COULD BE A VALID METHOD
         self.h_dict = {"hamming": self.hamming_distance,
                        "manhattan": self.manhattan_distance}
+        #TKTK COULD BE A VALIDATE HEURISTIC METHOD
         if heuristic not in self.h_dict.keys():
             h_tried = "Tried to use heuristic {}.".format(heuristic)
             valids = ", ".join([v for v in self.h_dict.keys()])
@@ -23,12 +27,25 @@ class baseHeuristicSolver(eightBlock):
         self.calculate_heuristic = self.h_dict[heuristic]
 
     def hamming_distance(self, board = None):
+        '''TKTK RIGHT NOW THIS ISN'T ACCOUNTING
+        FOR ZERO PROPERLY.
+
+        might be best to just change self.get_misplaced_values
+        to always exclude zero (since zero isn't really a tile)
+        '''
         return len(self.get_misplaced_values(board))
 
-    
-            
-
+    def manhattan_distance(self, board = None):
+        m_dist = 0
+        for v in self.valid_vals:
+            if not v:
+                continue
+            m_dist += abs(self.get_row(v, board) - self.get_row(v, self.goal_state))
+            m_dist += abs(self.get_col(v, board) - self.get_col(v, self.goal_state))
+        return m_dist
 
 if __name__ == "__main__":
-    foo = baseHeuristicSolver("hamming")
+    herp = [3,2,1,4,5,6,7,0,8]
+    derp = [1,2,3,4,5,6,7,8,0]
+    foo = baseHeuristicSolver("hamming", herp, derp)
     ipdb.set_trace()
