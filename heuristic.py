@@ -44,6 +44,22 @@ class baseHeuristicSolver(eightBlock):
             m_dist += abs(self.get_col(v, board) - self.get_col(v, self.goal_state))
         return m_dist
 
+class bestFirstSolver(baseHeuristicSolver):
+
+    def __init__(self, heuristic, start_state = None, goal_state = None):
+        '''
+        '''
+        super().__init__(heuristic, start_state, goal_state)
+        self.path_map = {}
+        self.prty_queue = [{"child":self.board_state,
+                            "parent":None,
+                            "path_cost":0,
+                            "heuristic":self.calculate_heuristic()}]
+
+    
+
+
+
 if __name__ == "__main__":
     herp = [3,2,1,4,5,6,7,0,8]
     derp = [1,2,3,4,5,6,7,8,0]
