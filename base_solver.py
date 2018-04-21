@@ -64,6 +64,28 @@ class eightBlockSolver(eightBlock):
     		move_to_get_to_child = current_board["mv_dir"]
     		self.path_map[current_state] = (parent_state, move_to_get_to_child)
 
+    def get_children(self, current_board):
+    	'''After retrieving a board, we then get its children. This consists of 
+    	looking up all possible moves we can make, excluding any states we've 
+    	already visited, and annotating the result states with their parent, 
+    	the direction of the move to yield the child, and the new level in the 
+    	search tree.
+
+        Returns a list of board dictionaries that needs to be integrated into
+        children_list. 
+        '''
+    	child_board_dicts = []
+    	poss_kids = self.get_next_boards()
+        for poss_mv in poss_kids.keys():
+            if self.board_to_state(poss_kids[poss_mv]) in self.path_map.keys():
+                continue
+            child_board = {"child":poss_kids[poss_mv],
+                           "parent":self.board_to_state(self.board_state),
+                           "mv_dir":poss_mv,
+                           "path_cost":current_board["path_cost"] + 1}
+            child_board_dicts.append(child_board)
+        return child_board_dicts
+
 
 
 
