@@ -27,19 +27,19 @@ class baseHeuristicSolver(eightBlock):
         self.calculate_heuristic = self.h_dict[heuristic]
 
     def hamming_distance(self, board = None):
-        '''TKTK RIGHT NOW THIS ISN'T ACCOUNTING
-        FOR ZERO PROPERLY.
-
-        might be best to just change self.get_misplaced_values
-        to always exclude zero (since zero isn't really a tile)
+        '''Compares a given board state to the goal state and returns the
+        number of misplaced tiles, excluding zero. If no board state is 
+        given, we simply compare with the current board state
         '''
         return len(self.get_misplaced_values(board))
 
     def manhattan_distance(self, board = None):
+        '''Compares a given board state to the goal state and returns the
+        sum of manhattan distances for each misplaced tile. If no board state 
+        is given, we simply compare with the current board state
+        '''
         m_dist = 0
-        for v in self.valid_vals:
-            if not v:
-                continue
+        for v in self.get_misplaced_values(board):
             m_dist += abs(self.get_row(v, board) - self.get_row(v, self.goal_state))
             m_dist += abs(self.get_col(v, board) - self.get_col(v, self.goal_state))
         return m_dist
