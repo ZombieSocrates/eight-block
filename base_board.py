@@ -3,8 +3,8 @@ import random
 '''This file contains the base class that all of the eight block solvers 
 inherit from. The methods in this class generally handle moving and displaying 
 different configurations of the board, retrieving positions of specific values, 
-and checking to see whether input boards
-
+and checking to see whether input boards differ in any way from some reference 
+board
 '''
 
 
