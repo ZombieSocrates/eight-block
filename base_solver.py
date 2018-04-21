@@ -13,7 +13,7 @@ the ones defined here.
 class eightBlockSolver(eightBlock):
 
     def __init__(self, start_state = None, goal_state = None):
-    	'''Initializes an eightBlock and then defines two additional
+        '''Initializes an eightBlock and then defines two additional
         class attributes needed to reach and keep track of solution
         paths
 
@@ -28,29 +28,29 @@ class eightBlockSolver(eightBlock):
             what the board configuration is, what parent state we came from, 
             what direction we moved in, and the depth in the search tree.
         '''
-    	super().__init__(start_state, goal_state)
-    	self.path_map = {}
-    	self.children_list = [{"child":self.board_state,
-    	                       "parent":None,
-    	                       "path_cost":0}]
+        super().__init__(start_state, goal_state)
+        self.path_map = {}
+        self.children_list = [{"child":self.board_state,
+                               "parent":None,
+                               "path_cost":0}]
 
     def check_next_child(self):
-    	'''We begin any solve method by looking at the first child board 
-    	dictionary available. There are cases (non-solveable boards) 
+        '''We begin any solve method by looking at the first child board 
+        dictionary available. There are cases (non-solveable boards) 
         where this list will run out and be empty.
 
         This method returns the first object in self.children_list if it 
         exists, and returns None otherwise.
         '''
-    	try:
-    		next_child = self.children_list[0]
-    	except IndexError:
-    		print("Initial board state not solveable")
-    		next_child = None
-    	return next_child
+        try:
+            next_child = self.children_list[0]
+        except IndexError:
+            print("Initial board state not solveable")
+            next_child = None
+        return next_child
 
     def update_path_map(self, current_board):
-    	'''Once we have a board from children_list, we need to update 
+        '''Once we have a board from children_list, we need to update 
         the path_map, which keeps track of parent-to-child relationships 
         between those states. After setting self.board_state as the `child` 
         attribute of current_board, we use current_board to make this update.
@@ -63,27 +63,27 @@ class eightBlockSolver(eightBlock):
         The only exception to this dictionary structure is that the initial 
         state key will have a value of None, since it has no parent.
         '''
-    	self.board_state = current_board["child"]
-    	current_state = self.board_to_state(self.board_state)
-    	parent_state = current_board["parent"]
-    	if parent_state is None:
-    		self.path_map[current_state] = parent_state
-    	else:
-    		move_to_get_to_child = current_board["mv_dir"]
-    		self.path_map[current_state] = (parent_state, move_to_get_to_child)
+        self.board_state = current_board["child"]
+        current_state = self.board_to_state(self.board_state)
+        parent_state = current_board["parent"]
+        if parent_state is None:
+            self.path_map[current_state] = parent_state
+        else:
+            move_to_get_to_child = current_board["mv_dir"]
+            self.path_map[current_state] = (parent_state, move_to_get_to_child)
 
     def get_children(self, current_board):
-    	'''After retrieving a board, we then get its children. This consists of 
-    	looking up all possible moves we can make, excluding any states we've 
-    	already visited, and annotating the result states with their parent, 
-    	the direction of the move to yield the child, and the new level in the 
-    	search tree.
+        '''After retrieving a board, we then get its children. This consists of 
+        looking up all possible moves we can make, excluding any states we've 
+        already visited, and annotating the result states with their parent, 
+        the direction of the move to yield the child, and the new level in the 
+        search tree.
 
         Returns a list of board dictionaries that needs to be integrated into
         children_list. 
         '''
-    	child_board_dicts = []
-    	poss_kids = self.get_next_boards()
+        child_board_dicts = []
+        poss_kids = self.get_next_boards()
         for poss_mv in poss_kids.keys():
             if self.board_to_state(poss_kids[poss_mv]) in self.path_map.keys():
                 continue
