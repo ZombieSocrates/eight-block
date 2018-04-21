@@ -8,7 +8,7 @@ class depthFirstSearchSolver(eightBlockSolver):
         '''
         super().__init__(start_state, goal_state)
 
-    def insert_children(self, next_children):
+    def stack_children(self, next_children):
         '''Inserts each object in next_children at the front of 
         self.children_list in reverse order. This is so that the first
         direction we can possibly move each time we generate children
@@ -18,9 +18,9 @@ class depthFirstSearchSolver(eightBlockSolver):
             self.children_list.insert(0, child)
 
     def solve(self, verbose = False):
-        '''The implementation of depth-first search treats children_list
-        as a stack, where the last child state inserted is the first one
-        to be checked next. In this method we
+        '''In depth-first search, we treat children_list as a stack, where the 
+        last child state inserted is the first one to be checked next. In this 
+        method we...
 
             * get the first item in children_list, exiting if it's empty
             * update the path_map with info from that board
@@ -37,115 +37,47 @@ class depthFirstSearchSolver(eightBlockSolver):
                 print("Solution found!")
                 return self.retrieve_solution_path()
             self.children_list.pop(0)
-            stack_children = self.get_children(curr_board)
-            self.insert_children(stack_children)
+            self.stack_children(self.get_children(curr_board))
             if verbose and len(self.path_map) % 1000 == 0:
                 print("Checked {} states".format(len(self.path_map)))
 
-class breadthFirstSearchSolver(eightBlock):
+class breadthFirstSearchSolver(eightBlockSolver):
     
     def __init__(self, start_state = None, goal_state = None):
-        '''Basically the same as the init of depthFirstSearchSolver, as is the 
-        case for most of these docstrings.
-
-        The biggest difference here is that I'm calling the structure for
-        storing child states the queue instead of the stack.
+        '''Just run eightBlockSolver's __init__() method...
         '''
         super().__init__(start_state, goal_state)
-        self.path_map = {}
-        self.board_queue = [{"child":self.board_state,
-                             "parent":None,
-                             "path_cost":0}]
 
-    def check_queue(self):
-        '''We always begin the solve method by looking at the first board
-        dictionary in the board_queue. This method returns the first object 
-        in the queue if it exists, and returns None otherwise
+    def children_to_queue(self, next_children):
+        '''Chucks children at the back of children_list. This is the key 
+        difference between depth-first and breadth-first search 
         '''
-        try:
-            top_board = self.board_queue[0]
-        except IndexError:
-            print("Initial board configuration not solveable")
-            top_board = None
-        return top_board
-
-    def update_path_map(self, current_board):
-        '''Once we have a board from the top of the queue, we update 
-        the path_map. 
-        '''
-        self.board_state = current_board["child"]
-        current_state = self.board_to_state(self.board_state)
-        parent_state = current_board["parent"]
-        if parent_state is None:
-            self.path_map[current_state] = None
-        else:
-            parent_to_child_dir = current_board["mv_dir"]
-            self.path_map[current_state] = (parent_state, parent_to_child_dir)
-
-    def get_children(self, current_board):
-        '''After popping the current board off the queue, we then get its
-        children, excluding any states that we've already visited. We 
-        annotate unseen child states with their parent, the direction of
-        the move to yield the child, and the new level in the search tree
-
-        returns a list of queue dictionaries representing all possible moves
-        '''
-        child_queue_dicts = []
-        poss_kids = self.get_next_boards()
-        for poss_mv in poss_kids.keys():
-            if self.board_to_state(poss_kids[poss_mv]) in self.path_map.keys():
-                continue
-            queue_dict = {"child":poss_kids[poss_mv],
-                          "parent":self.board_to_state(self.board_state),
-                          "mv_dir":poss_mv,
-                          "path_cost":current_board["path_cost"] + 1}
-            child_queue_dicts.append(queue_dict)
-        return child_queue_dicts
-
-    def children_to_queue(self, child_queue_dicts):
-        '''Chucks children at the back of the queue. This is the big difference 
-        between depth-first and breadth-first search 
-        '''
-        self.board_queue.extend(child_queue_dicts)
-
-    def retrieve_solution_path(self):
-        solution_path = []
-        child_key = self.board_to_state(self.board_state)
-        while self.path_map.get(child_key,""):
-            solution_path.insert(0, self.path_map[child_key])
-            child_key = self.path_map[child_key][0]
-        return solution_path
+        self.children_list.extend(next_children)
 
     def solve(self, verbose = False):
-        '''The implementation of breadth-first search basically just chains
-        the last five functions together. 
+        '''In breadth-first search, we treat children_list as a queue, where the 
+        first child state inserted is the first one to be checked next. In this 
+        method we...
 
-            * look at the top of the queue, exiting if it's empty
-            * update the path_map with info from the top of the queue
+            * get the first item in children_list, exiting if it's empty
+            * update the path_map with info from that board
             * check to see if we're at a goal state, returning the solution if we are
             * Otherwise, we take that top item off the queue and get child boards
             * Then we add these children to the back of the queue and repeat
         '''
         while self.get_misplaced_values():
-            curr_board = self.check_queue()
+            curr_board = self.check_next_child()
             if curr_board is None:
                 return curr_board
             self.update_path_map(curr_board)
             if not self.get_misplaced_values():
                 print("Solution found!")
                 return self.retrieve_solution_path()
-            self.board_queue.pop(0)
+            self.children_list.pop(0)
             queue_children = self.get_children(curr_board)
             self.children_to_queue(queue_children)
             if verbose and len(self.path_map) % 1000 == 0:
                 print("Checked {} states".format(len(self.path_map)))
-
-    def display_solution_path(self, solution_path):
-        '''Simply iterates over the tuples and prints out the solution 
-        instructions line by line in the format "From [state], move [direction"
-        '''
-        for i, tup in enumerate(solution_path):
-            print("{}. From {}, move {}".format(i + 1, tup[0], tup[1]))
 
 class iterativeDeepeningSolver(depthFirstSearchSolver):
 
