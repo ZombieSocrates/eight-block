@@ -1,6 +1,14 @@
 from base_board import eightBlock
 
+'''This file contains methods that all solvers will share. Every single 
+solver algorithm, whether it uses heuristics or not, will in some way make 
+use of steps like maintaining a list of next possible states, repeated state 
+checking, and tracking the pathways we've taken through the puzzle.
 
+Basically, any of the actual solvers will inherit from this class and
+add some methods (namely an actual solve() methid) that builds on or extends 
+the ones defined here.
+'''
 
 class eightBlockSolver(eightBlock):
 
