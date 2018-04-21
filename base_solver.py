@@ -86,11 +86,29 @@ class eightBlockSolver(eightBlock):
             child_board_dicts.append(child_board)
         return child_board_dicts
 
+    def retrieve_solution_path(self):
+        '''Once we find the solution state, we use it as a key in path_map
+        to look up the parent state and the direction we took to get there.
+        We then repeatedly look up the parent of the parent state until we
+        reach the initial state with no parent.
 
+        Returns a list of (parent_state, direction) tuples from path_map that 
+        spell out the solution found. The length of this solution_path is the 
+        number of levels deep in the tree we had to go to find this solution
+        '''
+        solution_path = []
+        child_key = self.board_to_state(self.board_state)
+        while self.path_map.get(child_key,""):
+            solution_path.insert(0, self.path_map[child_key])
+            child_key = self.path_map[child_key][0]
+        return solution_path
 
-
-
-
+    def display_solution_path(self, solution_path):
+        '''Simply iterates over the tuples and prints out the solution 
+        instructions line by line in the format "From [state], move [direction"
+        '''
+        for i, tup in enumerate(solution_path):
+            print("{}. From {}, move {}".format(i + 1, tup[0], tup[1]))
 
 if __name__ == "__main__":
     pass 
