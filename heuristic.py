@@ -1,7 +1,7 @@
-from base_board import eightBlock
+from base_solver import eightBlockSolver
 import ipdb
 
-class baseHeuristicSolver(eightBlock):
+class baseHeuristicSolver(eightBlockSolver):
 
     def __init__(self, heuristic, start_state = None, goal_state = None):
         '''
@@ -25,6 +25,7 @@ class baseHeuristicSolver(eightBlock):
             e_msg = " ".join([h_tried, h_valid])
             raise NotImplementedError(e_msg)
         self.calculate_heuristic = self.h_dict[heuristic]
+        #TKTK FOR EVERYTHING IN self.children_list: self["heuristic"] = self.calculate_heuristic(v.child)
 
     def hamming_distance(self, board = None):
         '''Compares a given board state to the goal state and returns the
@@ -50,11 +51,6 @@ class bestFirstSolver(baseHeuristicSolver):
         '''
         '''
         super().__init__(heuristic, start_state, goal_state)
-        self.path_map = {}
-        self.prty_queue = [{"child":self.board_state,
-                            "parent":None,
-                            "path_cost":0,
-                            "heuristic":self.calculate_heuristic()}]
 
     
 

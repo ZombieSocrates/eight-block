@@ -1,4 +1,3 @@
-from base_board import eightBlock
 from base_solver import eightBlockSolver
 
 class depthFirstSearchSolver(eightBlockSolver):
