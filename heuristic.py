@@ -25,7 +25,17 @@ class baseHeuristicSolver(eightBlockSolver):
             e_msg = " ".join([h_tried, h_valid])
             raise NotImplementedError(e_msg)
         self.calculate_heuristic = self.h_dict[heuristic]
-        #TKTK FOR EVERYTHING IN self.children_list: self["heuristic"] = self.calculate_heuristic(v.child)
+        for child in self.children_list:
+            self.add_heuristic_tag(child)
+
+    def add_heuristic_tag(self, child):
+        '''Given a dictionary in self.children_list, will simply add the
+        agreed upon heuristic value to that dictionary, based on whatever the
+        board configuration of that dictionary is.
+        '''
+        if not isinstance(child, dict) or "child" not in child.keys():
+            raise NotImplementedError
+        child["heuristic"] = self.calculate_heuristic(child["child"])
 
     def hamming_distance(self, board = None):
         '''Compares a given board state to the goal state and returns the
