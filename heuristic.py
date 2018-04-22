@@ -62,6 +62,15 @@ class bestFirstSolver(baseHeuristicSolver):
         '''
         super().__init__(heuristic, start_state, goal_state)
 
+    def tag_and_sort_children(self, list_of_children):
+        '''Given the output of self.get_children, this function will simply
+        add the heuristic tag to each item and then sort them so that the
+        one with the lowest heuristic value goes first
+        '''
+        for child in list_of_children:
+            self.add_heuristic_tag(child)
+        return sorted(list_of_children, key = lambda v: v["heuristic"])
+
     
 
 
