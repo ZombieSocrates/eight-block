@@ -71,6 +71,17 @@ class bestFirstSolver(baseHeuristicSolver):
             self.add_heuristic_tag(child)
         return sorted(list_of_children, key = lambda v: v["heuristic"])
 
+    def place_in_priority_queue(self, new_children):
+        '''TKTK SOMETHING LIKE
+
+        for i,v in enumerate(self.children_list):
+        if new_children[0] <= v:
+            x = new_children.pop(0)
+           children_list.insert(i,x)
+        self.children_list.extend(new_children)
+        '''
+
+
     
 
 
