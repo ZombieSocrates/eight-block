@@ -62,32 +62,53 @@ class bestFirstSolver(baseHeuristicSolver):
         '''
         super().__init__(heuristic, start_state, goal_state)
 
+    def get_priority(self, candidate_child):
+        '''For best first search, we're only prioritizing based on
+        the value of what the heuristic is. Given any child_dict, this helper
+        method returns that value
+        '''
+        return candidate_child["heuristic"]
+
     def tag_and_sort_children(self, list_of_children):
-        '''Given the output of self.get_children, this function will simply
+        '''Given the output of self.get_children, this method will simply
         add the heuristic tag to each item and then sort them so that the
         one with the lowest heuristic value goes first
         '''
         for child in list_of_children:
             self.add_heuristic_tag(child)
-        return sorted(list_of_children, key = lambda v: v["heuristic"])
+        return sorted(list_of_children, key = lambda v: self.get_priority(v))
 
     def place_in_priority_queue(self, new_children):
-        '''TKTK SOMETHING LIKE
+        '''Given a sorted list of candidate new children, this method will
+        sift those children into the existing children_list in priority
+        order, terminating once every object in new_children has been
+        integrated within children_list
 
-        for i,v in enumerate(self.children_list):
-        if new_children[0] <= v:
-            x = new_children.pop(0)
-           children_list.insert(i,x)
-        self.children_list.extend(new_children)
+        TKTK: If this is horribly slow, Tori suggested trying to implement
+        binary search for find the proper place
         '''
-
-
-    
+        for i, child_dict in enumerate(self.children_list):
+            if new_children[0]["heuristic"] <= self.get_priority(child_dict):
+                insert_child = new_children.pop(0)
+                self.children_list.insert(i, insert_child)
+                if not new_children:
+                    return
+        self.children_list.extend(new_children)
 
 
 
 if __name__ == "__main__":
     herp = [3,2,1,4,5,6,7,0,8]
     derp = [1,2,3,4,5,6,7,8,0]
-    foo = baseHeuristicSolver("hamming", herp, derp)
+    foo = bestFirstSolver("hamming", herp, derp)
     ipdb.set_trace()
+    print("Continue on to test of heuristic methods")
+    print("existing")
+    print(foo.children_list)
+    bar = foo.get_children(foo.children_list[0])
+    bar = foo.tag_and_sort_children(bar)
+    print("to_add")
+    print(bar)
+    foo.place_in_priority_queue(bar)
+    print("result")
+    print(foo.children_list)
