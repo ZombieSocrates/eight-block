@@ -2,11 +2,6 @@ from base_solver import eightBlockSolver
 
 class depthFirstSearchSolver(eightBlockSolver):
     
-    def __init__(self, start_state = None, goal_state = None):
-        '''Nothing to see here, folks
-        '''
-        super().__init__(start_state, goal_state)
-
     def stack_children(self, next_children):
         '''Inserts each object in next_children at the front of 
         self.children_list in reverse order. This is so that the first
@@ -42,11 +37,6 @@ class depthFirstSearchSolver(eightBlockSolver):
 
 class breadthFirstSearchSolver(eightBlockSolver):
     
-    def __init__(self, start_state = None, goal_state = None):
-        '''Just run eightBlockSolver's __init__() method...
-        '''
-        super().__init__(start_state, goal_state)
-
     def queue_children(self, next_children):
         '''Chucks children at the back of children_list. This is the key 
         difference between depth-first and breadth-first search 

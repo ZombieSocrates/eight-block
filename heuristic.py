@@ -57,11 +57,6 @@ class baseHeuristicSolver(eightBlockSolver):
 
 class bestFirstSolver(baseHeuristicSolver):
 
-    def __init__(self, heuristic, start_state = None, goal_state = None):
-        '''
-        '''
-        super().__init__(heuristic, start_state, goal_state)
-
     def get_priority(self, candidate_child):
         '''For best first search, we're only prioritizing based on
         the value of what the heuristic is. Given any child_dict, this helper
@@ -84,8 +79,8 @@ class bestFirstSolver(baseHeuristicSolver):
         order, terminating once every object in new_children has been
         integrated within children_list
 
-        TKTK: If this is horribly slow, Tori suggested trying to implement
-        binary search for find the proper place
+        TKTK: This is really slow if you give it an unsolveable state.
+        Maybe insert via binary search can solve it?
         '''
         for i, child_dict in enumerate(self.children_list):
             try:
@@ -98,7 +93,7 @@ class bestFirstSolver(baseHeuristicSolver):
         self.children_list.extend(new_children)
 
     def solve(self, verbose = False):
-        '''
+        '''TKTK document me
         '''
         while self.get_misplaced_values():
             curr_board = self.check_next_child()
