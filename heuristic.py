@@ -69,7 +69,7 @@ class bestFirstSolver(baseHeuristicSolver):
         '''
         return candidate_child["heuristic"]
 
-    def tag_and_sort_children(self, list_of_children):
+    def tag_and_sort(self, list_of_children):
         '''Given the output of self.get_children, this method will simply
         add the heuristic tag to each item and then sort them so that the
         one with the lowest heuristic value goes first
@@ -88,27 +88,37 @@ class bestFirstSolver(baseHeuristicSolver):
         binary search for find the proper place
         '''
         for i, child_dict in enumerate(self.children_list):
-            if new_children[0]["heuristic"] <= self.get_priority(child_dict):
+            try:
+                candidate = new_children[0]["heuristic"]
+            except IndexError:
+                return
+            if candidate <= self.get_priority(child_dict):
                 insert_child = new_children.pop(0)
                 self.children_list.insert(i, insert_child)
-                if not new_children:
-                    return
         self.children_list.extend(new_children)
+
+    def solve(self, verbose = False):
+        '''
+        '''
+        while self.get_misplaced_values():
+            curr_board = self.check_next_child()
+            if curr_board is None:
+                return curr_board
+            self.update_path_map(curr_board)
+            if not self.get_misplaced_values():
+                print("Solution Found")
+                return self.retrieve_solution_path()
+            self.children_list.pop(0) 
+            ranked_kids = self.tag_and_sort(self.get_children(curr_board))
+            self.place_in_priority_queue(ranked_kids)
+            if verbose and len(self.path_map) % 1000 == 0:
+                print("Checked {} states".format(len(self.path_map)))
 
 
 
 if __name__ == "__main__":
-    herp = [3,2,1,4,5,6,7,0,8]
-    derp = [1,2,3,4,5,6,7,8,0]
-    foo = bestFirstSolver("hamming", herp, derp)
+    in_board = [1,3,4,8,6,2,7,0,5]
+    goal_board = [1,2,3,8,0,4,7,6,5]
+    foo = bestFirstSolver("hamming", in_board, goal_board)
+    bar = foo.solve(verbose = True)
     ipdb.set_trace()
-    print("Continue on to test of heuristic methods")
-    print("existing")
-    print(foo.children_list)
-    bar = foo.get_children(foo.children_list[0])
-    bar = foo.tag_and_sort_children(bar)
-    print("to_add")
-    print(bar)
-    foo.place_in_priority_queue(bar)
-    print("result")
-    print(foo.children_list)
