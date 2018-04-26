@@ -84,10 +84,10 @@ class bestFirstSolver(baseHeuristicSolver):
         '''
         for i, child_dict in enumerate(self.children_list):
             try:
-                candidate = new_children[0]["heuristic"]
+                candidate = new_children[0]
             except IndexError:
                 return
-            if candidate <= self.get_priority(child_dict):
+            if self.get_priority(candidate) <= self.get_priority(child_dict):
                 insert_child = new_children.pop(0)
                 self.children_list.insert(i, insert_child)
         self.children_list.extend(new_children)
@@ -109,11 +109,63 @@ class bestFirstSolver(baseHeuristicSolver):
             if verbose and len(self.path_map) % 1000 == 0:
                 print("Checked {} states".format(len(self.path_map)))
 
+class aStarSolver(baseHeuristicSolver):
 
+    def get_priority(self, candidate_child):
+        '''For A-Star, we're prioritizing based on the sum of current cost plus
+        the value of the heuristic. Given any child_dict, this helper
+        method returns that value
+        '''
+        return candidate_child["heuristic"] + candidate_child["path_cost"]
+
+    def tag_and_sort(self, list_of_children):
+        '''Given the output of self.get_children, this method will simply
+        add the heuristic tag to each item and then sort them so that the
+        one with the lowest heuristic value goes first
+        '''
+        for child in list_of_children:
+            self.add_heuristic_tag(child)
+        return sorted(list_of_children, key = lambda v: self.get_priority(v))
+
+    def place_in_priority_queue(self, new_children):
+        '''Given a sorted list of candidate new children, this method will
+        sift those children into the existing children_list in priority
+        order, terminating once every object in new_children has been
+        integrated within children_list
+
+        TKTK 2: This is really slow if you give it an unsolveable state.
+        Maybe insert via binary search can solve it?
+        '''
+        for i, child_dict in enumerate(self.children_list):
+            try:
+                candidate = new_children[0]
+            except IndexError:
+                return
+            if self.get_priority(candidate) <= self.get_priority(child_dict):
+                insert_child = new_children.pop(0)
+                self.children_list.insert(i, insert_child)
+        self.children_list.extend(new_children)
+
+    def solve(self, verbose = False):
+        '''TKTK document me
+        '''
+        while self.get_misplaced_values():
+            curr_board = self.check_next_child()
+            if curr_board is None:
+                return curr_board
+            self.update_path_map(curr_board)
+            if not self.get_misplaced_values():
+                print("Solution Found")
+                return self.retrieve_solution_path()
+            self.children_list.pop(0) 
+            ranked_kids = self.tag_and_sort(self.get_children(curr_board))
+            self.place_in_priority_queue(ranked_kids)
+            if verbose and len(self.path_map) % 1000 == 0:
+                print("Checked {} states".format(len(self.path_map)))
 
 if __name__ == "__main__":
     in_board = [1,3,4,8,6,2,7,0,5]
     goal_board = [1,2,3,8,0,4,7,6,5]
-    foo = bestFirstSolver("hamming", in_board, goal_board)
+    foo = aStarSolver("manhattan", in_board, goal_board)
     bar = foo.solve(verbose = True)
     ipdb.set_trace()
