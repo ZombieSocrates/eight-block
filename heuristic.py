@@ -32,6 +32,9 @@ class baseHeuristicSolver(eightBlockSolver):
         '''Given a dictionary in self.children_list, will simply add the
         agreed upon heuristic value to that dictionary, based on whatever the
         board configuration of that dictionary is.
+
+        TKTK First check here could be a `validate_child` method that returns
+        nothing
         '''
         if not isinstance(child, dict) or "child" not in child.keys():
             raise NotImplementedError
@@ -55,14 +58,11 @@ class baseHeuristicSolver(eightBlockSolver):
             m_dist += abs(self.get_col(v, board) - self.get_col(v, self.goal_state))
         return m_dist
 
-class bestFirstSolver(baseHeuristicSolver):
-
     def get_priority(self, candidate_child):
-        '''For best first search, we're only prioritizing based on
-        the value of what the heuristic is. Given any child_dict, this helper
-        method returns that value
+        '''This method will be implemented in child classes. How you define 
+        "priority" is the only thing separating A* from Best First
         '''
-        return candidate_child["heuristic"]
+        pass
 
     def tag_and_sort(self, list_of_children):
         '''Given the output of self.get_children, this method will simply
@@ -92,6 +92,15 @@ class bestFirstSolver(baseHeuristicSolver):
                 self.children_list.insert(i, insert_child)
         self.children_list.extend(new_children)
 
+class bestFirstSolver(baseHeuristicSolver):
+
+    def get_priority(self, candidate_child):
+        '''For best first search, we're only prioritizing based on
+        the value of what the heuristic is. Given any child_dict, this helper
+        method returns that value
+        '''
+        return candidate_child["heuristic"]
+
     def solve(self, verbose = False):
         '''TKTK document me
         '''
@@ -118,34 +127,6 @@ class aStarSolver(baseHeuristicSolver):
         '''
         return candidate_child["heuristic"] + candidate_child["path_cost"]
 
-    def tag_and_sort(self, list_of_children):
-        '''Given the output of self.get_children, this method will simply
-        add the heuristic tag to each item and then sort them so that the
-        one with the lowest heuristic value goes first
-        '''
-        for child in list_of_children:
-            self.add_heuristic_tag(child)
-        return sorted(list_of_children, key = lambda v: self.get_priority(v))
-
-    def place_in_priority_queue(self, new_children):
-        '''Given a sorted list of candidate new children, this method will
-        sift those children into the existing children_list in priority
-        order, terminating once every object in new_children has been
-        integrated within children_list
-
-        TKTK 2: This is really slow if you give it an unsolveable state.
-        Maybe insert via binary search can solve it?
-        '''
-        for i, child_dict in enumerate(self.children_list):
-            try:
-                candidate = new_children[0]
-            except IndexError:
-                return
-            if self.get_priority(candidate) <= self.get_priority(child_dict):
-                insert_child = new_children.pop(0)
-                self.children_list.insert(i, insert_child)
-        self.children_list.extend(new_children)
-
     def solve(self, verbose = False):
         '''TKTK document me
         '''
@@ -166,6 +147,6 @@ class aStarSolver(baseHeuristicSolver):
 if __name__ == "__main__":
     in_board = [1,3,4,8,6,2,7,0,5]
     goal_board = [1,2,3,8,0,4,7,6,5]
-    foo = aStarSolver("manhattan", in_board, goal_board)
+    foo = aStarSolver("hamming", in_board, goal_board)
     bar = foo.solve(verbose = True)
     ipdb.set_trace()
