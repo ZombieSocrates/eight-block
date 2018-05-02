@@ -92,7 +92,7 @@ class baseHeuristicSolver(eightBlockSolver):
                 self.children_list.insert(i, insert_child)
         self.children_list.extend(new_children)
 
-class bestFirstSolver(baseHeuristicSolver):
+class bestFirstSearchSolver(baseHeuristicSolver):
 
     def get_priority(self, candidate_child):
         '''For best first search, we're only prioritizing based on
@@ -118,7 +118,7 @@ class bestFirstSolver(baseHeuristicSolver):
             if verbose and len(self.path_map) % 1000 == 0:
                 print("Checked {} states".format(len(self.path_map)))
 
-class aStarSolver(baseHeuristicSolver):
+class aStarSearchSolver(baseHeuristicSolver):
 
     def get_priority(self, candidate_child):
         '''For A-Star, we're prioritizing based on the sum of current cost plus
@@ -145,8 +145,4 @@ class aStarSolver(baseHeuristicSolver):
                 print("Checked {} states".format(len(self.path_map)))
 
 if __name__ == "__main__":
-    in_board = [1,3,4,8,6,2,7,0,5]
-    goal_board = [1,2,3,8,0,4,7,6,5]
-    foo = aStarSolver("hamming", in_board, goal_board)
-    bar = foo.solve(verbose = True)
-    ipdb.set_trace()
+    pass
