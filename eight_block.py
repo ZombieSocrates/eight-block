@@ -3,6 +3,7 @@ import ipdb
 
 from non_heuristic import depthFirstSearchSolver, breadthFirstSearchSolver, \
 iterativeDeepeningSolver
+from heuristic import bestFirstSearchSolver, aStarSearchSolver
 
 
 if __name__ == "__main__":
@@ -18,8 +19,13 @@ if __name__ == "__main__":
     DFS = depthFirstSearchSolver(in_board, goal_board)
     BFS = breadthFirstSearchSolver(in_board, goal_board)
     IDS = iterativeDeepeningSolver(in_board, goal_board)
+    GREEDY_hm = bestFirstSearchSolver("hamming", in_board, goal_board)
+    GREEDY_mn = bestFirstSearchSolver("manhattan", in_board, goal_board)
+    ASTAR_hm = aStarSearchSolver("hamming", in_board, goal_board)
+    ASTAR_mn = aStarSearchSolver("manhattan", in_board, goal_board)
+
     ipdb.set_trace()
-    solvers = [DFS, BFS, IDS]
+    solvers = [DFS, BFS, IDS, GREEDY_hm, GREEDY_mn, ASTAR_hm, ASTAR_mn]
     
     #3. Display, index, and goal-state check
     foo = random.choice(solvers)
