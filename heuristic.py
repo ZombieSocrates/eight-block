@@ -76,22 +76,6 @@ class baseHeuristicSolver(eightBlockSolver):
             self.add_heuristic_tag(child)
         return sorted(list_of_children, key = lambda v: self.get_priority(v))
 
-    def scan_priority_queue(self, new_children):
-        '''Given a sorted list of candidate new children, this method will
-        sift those children into the existing children_list in priority
-        order, terminating once every object in new_children has been
-        integrated within children_list
-        '''
-        for i, child_dict in enumerate(self.children_list):
-            try:
-                candidate = new_children[0]
-            except IndexError:
-                return
-            if self.get_priority(candidate) <= self.get_priority(child_dict):
-                insert_child = new_children.pop(0)
-                self.children_list.insert(i, insert_child)
-        self.children_list.extend(new_children)
-
     def bst_insertion(self, child, lwr = None, \
         upr = None):
         '''Uses a binary search tree method to find the right place to 
@@ -148,24 +132,6 @@ class bestFirstSearchSolver(baseHeuristicSolver):
                 return self.retrieve_solution_path()
             self.children_list.pop(0) 
             ranked_kids = self.tag_and_sort(self.get_children(curr_board))
-            self.scan_priority_queue(ranked_kids)
-            if verbose and len(self.path_map) % 1000 == 0:
-                print("Checked {} states".format(len(self.path_map)))
-
-    def solve2(self, verbose = False):
-        '''Just for comparing bst against scanning.
-        I have a feeling that bst is going to win by a long shot
-        '''
-        while self.get_misplaced_values():
-            curr_board = self.check_next_child()
-            if curr_board is None:
-                return curr_board
-            self.update_path_map(curr_board)
-            if not self.get_misplaced_values():
-                print("Solution Found")
-                return self.retrieve_solution_path()
-            self.children_list.pop(0) 
-            ranked_kids = self.tag_and_sort(self.get_children(curr_board))
             self.bst_priority_queue(ranked_kids)
             if verbose and len(self.path_map) % 1000 == 0:
                 print("Checked {} states".format(len(self.path_map)))
@@ -192,7 +158,7 @@ class aStarSearchSolver(baseHeuristicSolver):
                 return self.retrieve_solution_path()
             self.children_list.pop(0) 
             ranked_kids = self.tag_and_sort(self.get_children(curr_board))
-            self.scan_priority_queue(ranked_kids)
+            self.bst_priority_queue(ranked_kids)
             if verbose and len(self.path_map) % 1000 == 0:
                 print("Checked {} states".format(len(self.path_map)))
 
@@ -227,9 +193,6 @@ if __name__ == "__main__":
         t0 = time.time()
         solver.solve(verbose = True)
         t1 = time.time()
-        print("Solved {} case with scan in {:.2f} seconds".format(k, t1 - t0))
-        t0 = time.time()
-        solver.solve2(verbose = True)
-        t1 = time.time()
-        print("Solved {} case with BST in {:.2f} seconds".format(k, t1 - t0))
+        print("Solved {} case in {:.2f} seconds\n".format(k, t1 - t0))
+        print("---"*15)
 
