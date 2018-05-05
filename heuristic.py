@@ -1,5 +1,8 @@
-from base_solver import eightBlockSolver
 import ipdb
+import time
+
+from base_solver import eightBlockSolver
+
 
 class baseHeuristicSolver(eightBlockSolver):
 
@@ -89,11 +92,11 @@ class baseHeuristicSolver(eightBlockSolver):
                 self.children_list.insert(i, insert_child)
         self.children_list.extend(new_children)
 
-    def binary_search_tree_insertion(self, child, lwr = None, \
+    def bst_insertion(self, child, lwr = None, \
         upr = None):
-        '''Uses a binary search tree method to find the best place to 
-        insert child into list_of_children. Does so recursively and
-        will modify list_of_children in place
+        '''Uses a binary search tree method to find the right place to 
+        insert child into self.list_of_children. Does so recursively and
+        will modify self.list_of_children in place
 
         Ideally, this will help me implement a quicker method of ordering
         the priority queue than relying solely on the scanning method above
@@ -108,9 +111,9 @@ class baseHeuristicSolver(eightBlockSolver):
             mid = int((lwr + upr)/2)
             comp_val = self.get_priority(self.children_list[mid])
             if self.get_priority(child) <= comp_val:
-                self.binary_search_tree_insertion(child, lwr = lwr, upr = mid)
+                self.bst_insertion(child, lwr = lwr, upr = mid)
             else:
-                self.binary_search_tree_insertion(child, lwr = mid, upr = upr)
+                self.bst_insertion(child, lwr = mid, upr = upr)
 
     def bst_priority_queue(self, new_children):
         '''Given a sorted list of candidate new children, this method will 
@@ -121,7 +124,7 @@ class baseHeuristicSolver(eightBlockSolver):
             self.children_list.extend(new_children)
             return
         for child_dict in new_children:
-            self.binary_search_tree_insertion(child_dict)
+            self.bst_insertion(child_dict)
 
 class bestFirstSearchSolver(baseHeuristicSolver):
 
@@ -146,6 +149,24 @@ class bestFirstSearchSolver(baseHeuristicSolver):
             self.children_list.pop(0) 
             ranked_kids = self.tag_and_sort(self.get_children(curr_board))
             self.scan_priority_queue(ranked_kids)
+            if verbose and len(self.path_map) % 1000 == 0:
+                print("Checked {} states".format(len(self.path_map)))
+
+    def solve2(self, verbose = False):
+        '''Just for comparing bst against scanning.
+        I have a feeling that bst is going to win by a long shot
+        '''
+        while self.get_misplaced_values():
+            curr_board = self.check_next_child()
+            if curr_board is None:
+                return curr_board
+            self.update_path_map(curr_board)
+            if not self.get_misplaced_values():
+                print("Solution Found")
+                return self.retrieve_solution_path()
+            self.children_list.pop(0) 
+            ranked_kids = self.tag_and_sort(self.get_children(curr_board))
+            self.bst_priority_queue(ranked_kids)
             if verbose and len(self.path_map) % 1000 == 0:
                 print("Checked {} states".format(len(self.path_map)))
 
@@ -176,4 +197,39 @@ class aStarSearchSolver(baseHeuristicSolver):
                 print("Checked {} states".format(len(self.path_map)))
 
 if __name__ == "__main__":
-    pass
+    
+    case_dict = {
+                "easy":
+                    {
+                    "start":[1,3,4,8,6,2,7,0,5],
+                    "goal": [1,2,3,8,0,4,7,6,5]
+                    },
+                "medium":
+                    {
+                    "start":[2,8,1,0,4,3,7,6,5],
+                    "goal": [1,2,3,8,0,4,7,6,5]
+                    },
+                "hard":
+                    {
+                    "start":[5,6,7,4,0,8,3,2,1],
+                    "goal": [1,2,3,8,0,4,7,6,5]
+                    },        
+                "unsolveable":
+                    {
+                    "start":[3,2,1,8,0,4,7,6,5],
+                    "goal": [1,2,3,8,0,4,7,6,5]
+                    }
+                }
+
+    for k in case_dict.keys():
+        solver = bestFirstSearchSolver('hamming', case_dict[k]["start"], \
+            case_dict[k]["goal"])
+        t0 = time.time()
+        solver.solve(verbose = True)
+        t1 = time.time()
+        print("Solved {} case with scan in {:.2f} seconds".format(k, t1 - t0))
+        t0 = time.time()
+        solver.solve2(verbose = True)
+        t1 = time.time()
+        print("Solved {} case with BST in {:.2f} seconds".format(k, t1 - t0))
+
