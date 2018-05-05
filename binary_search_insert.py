@@ -3,11 +3,9 @@ import unittest
 def binary_insert(value, array, lwr = None, upr = None):
     '''
     '''
-    if lwr is None:
-        lwr = 0
-    if upr is None:
-        upr = len(array)
-    if len(array[lwr:upr]) <= 1:
+    lwr = 0 if lwr is None else lwr
+    upr = len(array) if upr is None else upr
+    if upr - lwr <= 1:
         loc = lwr if value <= array[lwr] else upr
         array.insert(loc,value)
     else:

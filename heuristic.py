@@ -73,14 +73,11 @@ class baseHeuristicSolver(eightBlockSolver):
             self.add_heuristic_tag(child)
         return sorted(list_of_children, key = lambda v: self.get_priority(v))
 
-    def place_in_priority_queue(self, new_children):
+    def scan_priority_queue(self, new_children):
         '''Given a sorted list of candidate new children, this method will
         sift those children into the existing children_list in priority
         order, terminating once every object in new_children has been
         integrated within children_list
-
-        TKTK: This is really slow if you give it an unsolveable state.
-        Maybe insert via binary search can solve it?
         '''
         for i, child_dict in enumerate(self.children_list):
             try:
@@ -91,6 +88,40 @@ class baseHeuristicSolver(eightBlockSolver):
                 insert_child = new_children.pop(0)
                 self.children_list.insert(i, insert_child)
         self.children_list.extend(new_children)
+
+    def binary_search_tree_insertion(self, child, lwr = None, \
+        upr = None):
+        '''Uses a binary search tree method to find the best place to 
+        insert child into list_of_children. Does so recursively and
+        will modify list_of_children in place
+
+        Ideally, this will help me implement a quicker method of ordering
+        the priority queue than relying solely on the scanning method above
+        '''
+        lwr = 0 if lwr is None else lwr
+        upr = len(self.children_list) if upr is None else upr
+        if (upr - lwr) <= 1:
+            comp_val = self.get_priority(self.children_list[lwr])
+            loc = lwr if self.get_priority(child) <= comp_val else upr
+            self.children_list.insert(loc, child)
+        else:
+            mid = int((lwr + upr)/2)
+            comp_val = self.get_priority(self.children_list[mid])
+            if self.get_priority(child) <= comp_val:
+                self.binary_search_tree_insertion(child, lwr = lwr, upr = mid)
+            else:
+                self.binary_search_tree_insertion(child, lwr = mid, upr = upr)
+
+    def bst_priority_queue(self, new_children):
+        '''Given a sorted list of candidate new children, this method will 
+        place them into the existing children_list using the binary search
+        driven method above
+        '''
+        if not self.children_list:
+            self.children_list.extend(new_children)
+            return
+        for child_dict in new_children:
+            self.binary_search_tree_insertion(child_dict)
 
 class bestFirstSearchSolver(baseHeuristicSolver):
 
@@ -114,7 +145,7 @@ class bestFirstSearchSolver(baseHeuristicSolver):
                 return self.retrieve_solution_path()
             self.children_list.pop(0) 
             ranked_kids = self.tag_and_sort(self.get_children(curr_board))
-            self.place_in_priority_queue(ranked_kids)
+            self.scan_priority_queue(ranked_kids)
             if verbose and len(self.path_map) % 1000 == 0:
                 print("Checked {} states".format(len(self.path_map)))
 
@@ -140,7 +171,7 @@ class aStarSearchSolver(baseHeuristicSolver):
                 return self.retrieve_solution_path()
             self.children_list.pop(0) 
             ranked_kids = self.tag_and_sort(self.get_children(curr_board))
-            self.place_in_priority_queue(ranked_kids)
+            self.scan_priority_queue(ranked_kids)
             if verbose and len(self.path_map) % 1000 == 0:
                 print("Checked {} states".format(len(self.path_map)))
 
