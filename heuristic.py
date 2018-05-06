@@ -27,7 +27,8 @@ class baseHeuristicSolver(eightBlockSolver):
             h_valid = "Must be one of {}.".format(valids)
             e_msg = " ".join([h_tried, h_valid])
             raise NotImplementedError(e_msg)
-        self.calculate_heuristic = self.h_dict[heuristic]
+        self.heuristic = heuristic
+        self.calculate_heuristic = self.h_dict[self.heuristic]
         for child in self.children_list:
             self.add_heuristic_tag(child)
 
@@ -163,36 +164,5 @@ class aStarSearchSolver(baseHeuristicSolver):
                 print("Checked {} states".format(len(self.path_map)))
 
 if __name__ == "__main__":
-    
-    case_dict = {
-                "easy":
-                    {
-                    "start":[1,3,4,8,6,2,7,0,5],
-                    "goal": [1,2,3,8,0,4,7,6,5]
-                    },
-                "medium":
-                    {
-                    "start":[2,8,1,0,4,3,7,6,5],
-                    "goal": [1,2,3,8,0,4,7,6,5]
-                    },
-                "hard":
-                    {
-                    "start":[5,6,7,4,0,8,3,2,1],
-                    "goal": [1,2,3,8,0,4,7,6,5]
-                    },        
-                "unsolveable":
-                    {
-                    "start":[3,2,1,8,0,4,7,6,5],
-                    "goal": [1,2,3,8,0,4,7,6,5]
-                    }
-                }
-
-    for k in case_dict.keys():
-        solver = bestFirstSearchSolver('hamming', case_dict[k]["start"], \
-            case_dict[k]["goal"])
-        t0 = time.time()
-        solver.solve(verbose = True)
-        t1 = time.time()
-        print("Solved {} case in {:.2f} seconds\n".format(k, t1 - t0))
-        print("---"*15)
+    pass
 
