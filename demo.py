@@ -80,7 +80,7 @@ if __name__ == "__main__":
                 nm += "_{}".format(solver.heuristic)
             cst = len(sln) if sln else "N/A"
             print("Solution cost for {}: {}".format(nm, cst))
-            print("---"*15)
+            print("---"*15,"\n")
 
         ipdb.set_trace()
 
