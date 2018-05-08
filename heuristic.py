@@ -77,8 +77,7 @@ class baseHeuristicSolver(eightBlockSolver):
             self.add_heuristic_tag(child)
         return sorted(list_of_children, key = lambda v: self.get_priority(v))
 
-    def bst_insertion(self, child, lwr = None, \
-        upr = None):
+    def bst_insertion(self, child, lwr = None, upr = None):
         '''Uses a binary search tree method to find the right place to 
         insert child into self.list_of_children. Does so recursively and
         will modify self.list_of_children in place
