@@ -71,6 +71,9 @@ if __name__ == "__main__":
         # Get solution for each and compare cost
         for solver in solvers:
             t0 = time.time()
+            if k[0] == 'u' and hasattr(solver, "depth_limit"):
+                print("Skipping unsolveable case with iterative deepening\n")
+                continue
             sln = solver.solve(verbose = True)
             t1 = time.time()
             print("{} case end state reached in {:.2f} seconds".format(\
