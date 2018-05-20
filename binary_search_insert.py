@@ -1,5 +1,11 @@
 import unittest
 
+'''
+More of an experimental script to prototype and test how 
+binary-search-tree insertion into an ordered list would work.
+This method is repurposed for all of the heuristic solvers in `heuristic.py`
+'''
+
 def binary_insert(value, array, lwr = None, upr = None):
     '''
     '''
