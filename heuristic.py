@@ -1,4 +1,3 @@
-import ipdb
 import time
 
 from base_solver import eightBlockSolver
@@ -119,10 +118,19 @@ class bestFirstSearchSolver(baseHeuristicSolver):
         '''
         return candidate_child["heuristic"]
 
-    def solve(self, verbose = False):
+    def solve(self, verbose = False, time_bound = 180):
         '''TKTK document me
+
+        The time_bound argument will end any solver that has been running for
+        more than X seconds. Default value lets these spin for 3 minutes max.
         '''
+        runtime = 0
         while self.get_misplaced_values():
+            iter_start = time.time()
+            if runtime >= time_bound:
+                err_pt_1 = "Running for {} over seconds".format(time_bound)
+                print("Running for {} seconds...assuming unsolveability")
+                return None
             curr_board = self.check_next_child()
             if curr_board is None:
                 return curr_board
@@ -135,6 +143,7 @@ class bestFirstSearchSolver(baseHeuristicSolver):
             self.bst_priority_queue(ranked_kids)
             if verbose and len(self.path_map) % 1000 == 0:
                 print("Checked {} states".format(len(self.path_map)))
+            runtime += time.time() - iter_start
 
 class aStarSearchSolver(baseHeuristicSolver):
 
@@ -145,10 +154,19 @@ class aStarSearchSolver(baseHeuristicSolver):
         '''
         return candidate_child["heuristic"] + candidate_child["path_cost"]
 
-    def solve(self, verbose = False):
+    def solve(self, verbose = False, time_bound = 180):
         '''TKTK document me
+
+        The time_bound argument will end any solver that has been running for
+        more than X seconds. Default value lets these spin for 3 minutes max.
         '''
+        runtime = 0
         while self.get_misplaced_values():
+            iter_start = time.time()
+            if runtime >= time_bound:
+                err_pt_1 = "Running for {} over seconds".format(time_bound)
+                print("Running for {} seconds...assuming unsolveability")
+                return None
             curr_board = self.check_next_child()
             if curr_board is None:
                 return curr_board
@@ -161,6 +179,7 @@ class aStarSearchSolver(baseHeuristicSolver):
             self.bst_priority_queue(ranked_kids)
             if verbose and len(self.path_map) % 1000 == 0:
                 print("Checked {} states".format(len(self.path_map)))
+            runtime += time.time() - iter_start
 
 if __name__ == "__main__":
     pass

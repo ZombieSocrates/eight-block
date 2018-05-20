@@ -6,7 +6,7 @@ use of steps like maintaining a list of next possible states, repeated state
 checking, and tracking the pathways we've taken through the puzzle.
 
 Basically, any of the actual solvers will inherit from this class and
-add some methods (namely an actual solve() methid) that builds on or extends 
+add some methods (namely an actual solve() method) that builds on or extends 
 the ones defined here.
 '''
 

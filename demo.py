@@ -8,10 +8,6 @@ from heuristic import bestFirstSearchSolver, aStarSearchSolver
 
 
 if __name__ == "__main__":
-
-    # TKTK look at Tori's assignment and copy the EASY, MEDIUM, HARD, and 
-    # GOAL states
-    
     #1: Create initial board and goal board
     case_dict = {
                 "easy":
@@ -71,13 +67,11 @@ if __name__ == "__main__":
         # Get solution for each and compare cost
         for solver in solvers:
             t0 = time.time()
-            if k[0] == 'u' and hasattr(solver, "depth_limit"):
-                print("Skipping unsolveable case with iterative deepening\n")
-                continue
             sln = solver.solve(verbose = True)
             t1 = time.time()
-            print("{} case end state reached in {:.2f} seconds".format(\
-                k.title(),t1-t0))
+            t_pt_1 = "{} case end state reached".format(k.title())
+            t_pt_2 = "in {:.2f} seconds".format(t1 - t0)
+            print(" ".join([t_pt_1, t_pt_2]))
             nm = type(solver).__name__
             if hasattr(solver, "heuristic"):
                 nm += "_{}".format(solver.heuristic)

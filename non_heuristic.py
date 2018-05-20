@@ -1,3 +1,4 @@
+import time
 from base_solver import eightBlockSolver
 
 class depthFirstSearchSolver(eightBlockSolver):
@@ -11,7 +12,7 @@ class depthFirstSearchSolver(eightBlockSolver):
         for child in next_children[::-1]:
             self.children_list.insert(0, child)
 
-    def solve(self, verbose = False):
+    def solve(self, verbose = False, time_bound = 180):
         '''In depth-first search, we treat children_list as a stack, where the 
         last child state inserted is the first one to be checked next. In this 
         method we...
@@ -21,8 +22,17 @@ class depthFirstSearchSolver(eightBlockSolver):
             * check to see if we're at a goal state, returning the solution if we are
             * Otherwise, we pop that top item off the stack and get child boards
             * Then we add these children to the top of the stack and repeat
+
+        The time_bound argument will end any solver that has been running for
+        more than X seconds. Default value lets these spin for 3 minutes max.
         '''
+        runtime = 0
         while self.get_misplaced_values():
+            iter_start = time.time()
+            if runtime >= time_bound:
+                err_pt_1 = "Running for {} over seconds".format(time_bound)
+                print("Running for {} seconds...assuming unsolveability")
+                return None
             curr_board = self.check_next_child()
             if curr_board is None:
                 return curr_board
@@ -34,6 +44,7 @@ class depthFirstSearchSolver(eightBlockSolver):
             self.stack_children(self.get_children(curr_board))
             if verbose and len(self.path_map) % 1000 == 0:
                 print("Checked {} states".format(len(self.path_map)))
+            runtime += time.time() - iter_start
 
 class breadthFirstSearchSolver(eightBlockSolver):
     
@@ -43,7 +54,7 @@ class breadthFirstSearchSolver(eightBlockSolver):
         '''
         self.children_list.extend(next_children)
 
-    def solve(self, verbose = False):
+    def solve(self, verbose = False, time_bound = 180):
         '''In breadth-first search, we treat children_list as a queue, where the 
         first child state inserted is the first one to be checked next. In this 
         method we...
@@ -53,8 +64,17 @@ class breadthFirstSearchSolver(eightBlockSolver):
             * check to see if we're at a goal state, returning the solution if we are
             * Otherwise, we take that top item off the queue and get child boards
             * Then we add these children to the back of the queue and repeat
+
+        The time_bound argument will end any solver that has been running for
+        more than X seconds. Default value lets these spin for 3 minutes max.
         '''
+        runtime = 0
         while self.get_misplaced_values():
+            iter_start = time.time()
+            if runtime >= time_bound:
+                err_pt_1 = "Running for {} over seconds".format(time_bound)
+                print("Running for {} seconds...assuming unsolveability")
+                return None
             curr_board = self.check_next_child()
             if curr_board is None:
                 return curr_board
@@ -66,6 +86,7 @@ class breadthFirstSearchSolver(eightBlockSolver):
             self.queue_children(self.get_children(curr_board))
             if verbose and len(self.path_map) % 1000 == 0:
                 print("Checked {} states".format(len(self.path_map)))
+            runtime += time.time() - iter_start
 
 class iterativeDeepeningSolver(depthFirstSearchSolver):
 
@@ -119,7 +140,7 @@ class iterativeDeepeningSolver(depthFirstSearchSolver):
             print("Checked up to depth {}".format(self.depth_limit - 1))
             print("Restarting with depth limit {}".format(self.depth_limit))
 
-    def solve(self, verbose = False):
+    def solve(self, verbose = False, time_bound = 180):
         '''Iterative deepening is basically just a modification of depth-first 
         search. 
 
@@ -134,7 +155,14 @@ class iterativeDeepeningSolver(depthFirstSearchSolver):
             * Otherwise, we pop that top item off the stack and get child boards
             * Then we add these children to the top of the stack and repeat
         '''
+        runtime = 0
         while self.get_misplaced_values():
+            iter_start = time.time()
+            if runtime >= time_bound:
+                err_pt_1 = "Running for {} over seconds".format(time_bound)
+                err_pt_2 = "assuming unsolveable board."
+                print("...".join([err_pt_1, err_pt_2]))
+                return None
             curr_board = self.check_next_child()
             if curr_board is None:
                 return curr_board
@@ -151,6 +179,7 @@ class iterativeDeepeningSolver(depthFirstSearchSolver):
             self.stack_children(self.get_children(curr_board))
             if verbose and len(self.path_map) % 1000 == 0:
                 print("Checked {} states".format(len(self.path_map)))
+            runtime += time.time() - iter_start
 
 if __name__ == "__main__":
     pass
