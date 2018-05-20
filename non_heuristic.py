@@ -31,7 +31,8 @@ class depthFirstSearchSolver(eightBlockSolver):
             iter_start = time.time()
             if runtime >= time_bound:
                 err_pt_1 = "Running for {} over seconds".format(time_bound)
-                print("Running for {} seconds...assuming unsolveability")
+                err_pt_2 = "assuming unsolveable board."
+                print("...".join([err_pt_1, err_pt_2]))
                 return None
             curr_board = self.check_next_child()
             if curr_board is None:
@@ -73,7 +74,8 @@ class breadthFirstSearchSolver(eightBlockSolver):
             iter_start = time.time()
             if runtime >= time_bound:
                 err_pt_1 = "Running for {} over seconds".format(time_bound)
-                print("Running for {} seconds...assuming unsolveability")
+                err_pt_2 = "assuming unsolveable board."
+                print("...".join([err_pt_1, err_pt_2]))
                 return None
             curr_board = self.check_next_child()
             if curr_board is None:

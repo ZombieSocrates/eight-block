@@ -1,4 +1,6 @@
 import time
+import ipdb
+import math
 
 from base_solver import eightBlockSolver
 
@@ -16,10 +18,9 @@ class baseHeuristicSolver(eightBlockSolver):
         get_row()
         '''
         super().__init__(start_state, goal_state)
-        #TKTK COULD BE A VALID METHOD
         self.h_dict = {"hamming": self.hamming_distance,
-                       "manhattan": self.manhattan_distance}
-        #TKTK COULD BE A VALIDATE HEURISTIC METHOD
+                       "manhattan": self.manhattan_distance,
+                       "euclidean": self.euclidean_distance}
         if heuristic not in self.h_dict.keys():
             h_tried = "Tried to use heuristic {}.".format(heuristic)
             valids = ", ".join([v for v in self.h_dict.keys()])
@@ -60,6 +61,18 @@ class baseHeuristicSolver(eightBlockSolver):
             m_dist += abs(self.get_row(v, board) - self.get_row(v, self.goal_state))
             m_dist += abs(self.get_col(v, board) - self.get_col(v, self.goal_state))
         return m_dist
+
+    def euclidean_distance(self, board = None):
+        '''Compares a given board state to the goal state and returns the
+        sum of euclidean distances for each misplaced tile. If no board state 
+        is given, we simply compare with the current board state
+        '''
+        e_dist = 0
+        for v in self.get_misplaced_values(board):
+            ss_row = (self.get_row(v, board) - self.get_row(v, self.goal_state))**2
+            ss_col = (self.get_col(v, board) - self.get_col(v, self.goal_state))**2
+            e_dist += math.sqrt(ss_col + ss_row)
+        return e_dist
 
     def get_priority(self, candidate_child):
         '''This method will be implemented in child classes. How you define 
@@ -129,7 +142,8 @@ class bestFirstSearchSolver(baseHeuristicSolver):
             iter_start = time.time()
             if runtime >= time_bound:
                 err_pt_1 = "Running for {} over seconds".format(time_bound)
-                print("Running for {} seconds...assuming unsolveability")
+                err_pt_2 = "assuming unsolveable board."
+                print("...".join([err_pt_1, err_pt_2]))
                 return None
             curr_board = self.check_next_child()
             if curr_board is None:
@@ -165,7 +179,8 @@ class aStarSearchSolver(baseHeuristicSolver):
             iter_start = time.time()
             if runtime >= time_bound:
                 err_pt_1 = "Running for {} over seconds".format(time_bound)
-                print("Running for {} seconds...assuming unsolveability")
+                err_pt_2 = "assuming unsolveable board."
+                print("...".join([err_pt_1, err_pt_2]))
                 return None
             curr_board = self.check_next_child()
             if curr_board is None:
@@ -182,5 +197,8 @@ class aStarSearchSolver(baseHeuristicSolver):
             runtime += time.time() - iter_start
 
 if __name__ == "__main__":
-    pass
+    foo = aStarSearchSolver('euclidean', start_state = [5,2,3,8,0,4,7,6,1], \
+        goal_state = [1,2,3,8,0,4,7,6,5])
+
+    ipdb.set_trace()
 
