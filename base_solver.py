@@ -113,10 +113,21 @@ class eightBlockSolver(eightBlock):
 
     def display_solution_path(self, solution_path):
         '''Simply iterates over the tuples and prints out the solution 
-        instructions line by line in the format "From [state], move [direction"
+        instructions line by line in the format "From [state], move [number] 
+        in [direction]"
+
+        A lot of this basically involves looking at the parent state, finding
+        where the 0 was in that parent state, and then using the direction to
+        index backward from the zero into the properly moved tile
         '''
         for i, tup in enumerate(solution_path):
-            print("{}. From {}, move {}".format(i + 1, tup[0], tup[1]))
+            zero_loc = self.state_to_board(tup[0]).index(0)
+            idx_shift = -1 if tup[1] in ["right", "down"] else 1
+            idx_shift = 3 * idx_shift if tup[1] in ["up", "down"] else idx_shift
+            num_moved = self.state_to_board(tup[0])[zero_loc + idx_shift]
+            dsp_ln_1 = "{}. From {}".format(i + 1, tup[0])
+            dsp_ln_2 = "move the {} {}".format(num_moved, tup[1])
+            print(", ".join([dsp_ln_1, dsp_ln_2]))
 
 if __name__ == "__main__":
     pass 
