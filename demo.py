@@ -44,11 +44,16 @@ if __name__ == "__main__":
             case_dict[k]["goal"])
         GREEDY_mn = bestFirstSearchSolver("manhattan", case_dict[k]["start"], \
             case_dict[k]["goal"])
+        GREEDY_ec = bestFirstSearchSolver("euclidean", case_dict[k]["start"], \
+            case_dict[k]["goal"])
         ASTAR_hm = aStarSearchSolver("hamming", case_dict[k]["start"], \
             case_dict[k]["goal"])
         ASTAR_mn = aStarSearchSolver("manhattan", case_dict[k]["start"], \
             case_dict[k]["goal"])
-        solvers = [DFS, BFS, IDS, GREEDY_hm, GREEDY_mn, ASTAR_hm, ASTAR_mn]
+        ASTAR_ec = aStarSearchSolver("euclidean", case_dict[k]["start"], \
+            case_dict[k]["goal"])
+        solvers = [DFS, BFS, IDS, GREEDY_hm, GREEDY_mn, GREEDY_ec, \
+        ASTAR_hm, ASTAR_mn, ASTAR_ec]
         
         #3. Display, index, and goal-state check
         foo = random.choice(solvers)

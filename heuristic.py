@@ -132,7 +132,17 @@ class bestFirstSearchSolver(baseHeuristicSolver):
         return candidate_child["heuristic"]
 
     def solve(self, verbose = False, time_bound = 180):
-        '''TKTK document me
+        '''For best-first search, we're treating children_list as a priority 
+        queue, ordered by the lowest value of our heuristic (some form of 
+        distance from the goal state). In this method we...
+
+            * get the first item in children_list, exiting if it's empty
+            * update the path_map with info from that board
+            * check to see if we're at a goal state, returning the solution if we are
+            * Otherwise, we pop that top item off the priority queue
+            * Get that item's children, and use bst insertion to order those children
+            in the queue
+            * Repeat the entire process!
 
         The time_bound argument will end any solver that has been running for
         more than X seconds. Default value lets these spin for 3 minutes max.
@@ -169,7 +179,19 @@ class aStarSearchSolver(baseHeuristicSolver):
         return candidate_child["heuristic"] + candidate_child["path_cost"]
 
     def solve(self, verbose = False, time_bound = 180):
-        '''TKTK document me
+        '''For A Star search, we're treating children_list as a priority 
+        queue. But instead of being ordered only by distance from the goal
+        state, we're ordering by "distance from the goal state" plus
+        "current path cost" of that solution. The method otherwise proceeds
+        basically just like bestFirst search does.
+
+            * get the first item in children_list, exiting if it's empty
+            * update the path_map with info from that board
+            * check to see if we're at a goal state, returning the solution if we are
+            * Otherwise, we pop that top item off the priority queue
+            * Get that item's children, and use bst insertion to order those children
+            in the queue
+            * Repeat the entire process!
 
         The time_bound argument will end any solver that has been running for
         more than X seconds. Default value lets these spin for 3 minutes max.
@@ -197,8 +219,5 @@ class aStarSearchSolver(baseHeuristicSolver):
             runtime += time.time() - iter_start
 
 if __name__ == "__main__":
-    foo = aStarSearchSolver('euclidean', start_state = [5,2,3,8,0,4,7,6,1], \
-        goal_state = [1,2,3,8,0,4,7,6,5])
-
-    ipdb.set_trace()
+    pass
 
